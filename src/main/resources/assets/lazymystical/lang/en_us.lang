@@ -1,0 +1,15 @@
+itemGroup.lazymystical=Lazy Mystical
+
+tile.lazymystical.accelerator1.name=accelerator level 1
+tile.lazymystical.accelerator2.name=accelerator level 2
+tile.lazymystical.accelerator3.name=accelerator level 3
+tile.lazymystical.accelerator4.name=accelerator level 4
+tile.lazymystical.accelerator5.name=accelerator level 5
+
+tile.lazymystical.inferium_seed_cultivator.name=inferium seed cultivator
+tile.lazymystical.prudentium_seed_cultivator.name=prudentium seed cultivator
+tile.lazymystical.tertium_seed_cultivator.name=tertium seed cultivator
+tile.lazymystical.imperium_seed_cultivator.name=imperium seed cultivator
+tile.lazymystical.supremium_seed_cultivator.name=supremium seed cultivator
+
+config.acceleratorSpeed.comment=amount of seconds between each update scale of the growth accelerator.

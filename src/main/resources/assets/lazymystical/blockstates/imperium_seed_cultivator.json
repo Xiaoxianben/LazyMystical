@@ -1,0 +1,32 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "side": "lazymystical:blocks/machine/4_side",
+            "front": "lazymystical:blocks/machine/4"
+        },
+        "model": "lazymystical:machine"
+    },
+    "variants": {
+        "normal": [
+            {}
+        ],
+        "facing": {
+            "north": {
+                "y": 0
+            },
+            "south": {
+                "y": 180
+            },
+            "west": {
+                "y": 270
+            },
+            "east": {
+                "y": 90
+            }
+        },
+        "inventory": {
+            "transform": "forge:default-block"
+        }
+    }
+}

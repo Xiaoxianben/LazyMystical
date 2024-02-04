@@ -1,0 +1,15 @@
+itemGroup.lazymystical=神秘加强
+
+tile.lazymystical.accelerator1.name=生长加速器 1 级
+tile.lazymystical.accelerator2.name=生长加速器 2 级
+tile.lazymystical.accelerator3.name=生长加速器 3 级
+tile.lazymystical.accelerator4.name=生长加速器 4 级
+tile.lazymystical.accelerator5.name=生长加速器 5 级
+
+tile.lazymystical.inferium_seed_cultivator.name=下级培养器
+tile.lazymystical.prudentium_seed_cultivator.name=初级培养器
+tile.lazymystical.tertium_seed_cultivator.name=中级培养器
+tile.lazymystical.imperium_seed_cultivator.name=高级培养器
+tile.lazymystical.supremium_seed_cultivator.name=终极培养器
+
+config.acceleratorSpeed.comment=生长加速器的每次更新刻度之间的秒数。
