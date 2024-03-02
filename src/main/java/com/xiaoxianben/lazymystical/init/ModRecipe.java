@@ -34,7 +34,8 @@ public class ModRecipe {
                 'I', block,
                 'X', inputBlock
         };
-        GameRegistry.addShapedRecipe(outBlock.getRegistryName(),
+        GameRegistry.addShapedRecipe(
+                new ResourceLocation(Reference.MOD_ID, outBlock.getRegistryName() + "_1"),
                 new ResourceLocation(Reference.MOD_ID, "accelerator"),
                 Item.getItemFromBlock(outBlock).getDefaultInstance(),
                 params);

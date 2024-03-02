@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Objects;
 
 public class BlockSeedCultivator extends BlockTEBasic implements ITileEntityProvider {
 
@@ -34,7 +35,7 @@ public class BlockSeedCultivator extends BlockTEBasic implements ITileEntityProv
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!worldIn.isRemote) {
             if (playerIn.isSneaking()) {
-                NBTTagCompound compound = worldIn.getTileEntity(pos).writeToNBT(new NBTTagCompound());
+                NBTTagCompound compound = Objects.requireNonNull(worldIn.getTileEntity(pos)).writeToNBT(new NBTTagCompound());
                 playerIn.sendMessage(new TextComponentString(compound.toString()));
             }
             int id = GUIHandler.BlockGUI;

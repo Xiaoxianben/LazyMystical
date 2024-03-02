@@ -8,6 +8,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import java.util.Objects;
+
 public class ModBlocks {
     public static BlockAccelerator[] accelerators = new BlockAccelerator[5];
 
@@ -40,7 +42,8 @@ public class ModBlocks {
         for (int i = 1; i <= accelerators.length; i++) {
             if (i == 1) {
                 ModRecipe.acceleratorRecipe(accelerators[0], strings[0], "gemDiamond");
-                GameRegistry.addShapelessRecipe(ModBlocks.accelerators[0].getRegistryName(),
+                GameRegistry.addShapelessRecipe(
+                        new ResourceLocation(Reference.MOD_ID, Objects.requireNonNull(ModBlocks.accelerators[0].getRegistryName()).getResourcePath() + "_2"),
                         new ResourceLocation(Reference.MOD_ID, "accelerator1"),
                         Item.getItemFromBlock(ModBlocks.accelerators[0]).getDefaultInstance(),
                         CraftingHelper.getIngredient(com.blakebr0.mysticalagriculture.blocks.ModBlocks.blockGrowthAccelerator));

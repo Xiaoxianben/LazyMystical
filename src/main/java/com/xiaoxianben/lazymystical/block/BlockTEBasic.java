@@ -18,8 +18,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -50,20 +48,6 @@ public class BlockTEBasic extends BlockContainer implements IHasModel {
     @Override
     public void registerModels() {
         Main.proxy.registerItemRenderer(Item.getItemFromBlock(this), 0, "inventory");
-    }
-
-    @ParametersAreNonnullByDefault
-    @Override
-    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
-        TileEntity tile = world.getTileEntity(pos);
-        boolean rotate = super.rotateBlock(world, pos, axis);
-
-        if (tile != null && rotate) {
-            tile.validate();
-            world.setTileEntity(pos, tile);
-        }
-
-        return rotate;
     }
 
     @ParametersAreNonnullByDefault
@@ -122,17 +106,6 @@ public class BlockTEBasic extends BlockContainer implements IHasModel {
     @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, FACING);
-    }
-
-
-    @Override
-    public IBlockState withRotation(IBlockState state, Rotation rot) {
-        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
-    }
-
-    @Override
-    public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
-        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
     }
 
     @ParametersAreNonnullByDefault

@@ -67,8 +67,9 @@ public class BlockAccelerator extends BlockBasic {
                 Block cropBlock = cropState.getBlock();
 
                 if (cropBlock instanceof IGrowable || cropBlock instanceof IPlantable) {
-                    cropBlock.randomTick(world, aoePos, cropState, world.rand);
-//                    System.out.printf("x=%d,y=%d,z=%d Growing crops \n", aoePos.getX(), aoePos.getY(), aoePos.getZ());
+                    for (int i = 0; i < this.getLevel(); i++) {
+                        cropBlock.randomTick(world, aoePos, cropState, world.rand);
+                    }
                     break;
                 }
             }
