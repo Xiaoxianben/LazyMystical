@@ -1,4 +1,4 @@
-package com.xiaoxianben.lazymystical.util;
+package com.xiaoxianben.lazymystical.api;
 
 public interface IHasModel {
 

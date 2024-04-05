@@ -45,10 +45,13 @@ public class BlockAccelerator extends BlockBasic {
     @ParametersAreNonnullByDefault
     @Override
     public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
-        worldUpdate(world, pos, state);
+        world.scheduleBlockUpdate(pos, state.getBlock(), 1, 1);
         super.onBlockAdded(world, pos, state);
     }
 
+    /**
+     * 方在世界更新时，启动块更新
+     */
     @ParametersAreNonnullByDefault
     @Override
     public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
@@ -59,9 +62,9 @@ public class BlockAccelerator extends BlockBasic {
 
     private void growCropsNearby(World world, BlockPos pos, IBlockState state) {
         Iterable<BlockPos> blocks = BlockPos.getAllInBox(pos.add(0, 1, 0), pos.add(0, 12 * this.level, 0));
-        if (!this.isEnabled() && !blocks.iterator().hasNext())
-            worldUpdate(world, pos, state);
-        else {
+        if (!blocks.iterator().hasNext() || !isEnabled()) {
+            world.scheduleBlockUpdate(pos, state.getBlock(), 1, 1);
+        } else {
             for (BlockPos aoePos : blocks) {
                 IBlockState cropState = world.getBlockState(aoePos);
                 Block cropBlock = cropState.getBlock();

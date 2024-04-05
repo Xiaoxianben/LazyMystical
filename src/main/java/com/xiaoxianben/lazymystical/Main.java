@@ -1,13 +1,13 @@
 package com.xiaoxianben.lazymystical;
 
 import com.xiaoxianben.lazymystical.GUI.GUIHandler;
-import com.xiaoxianben.lazymystical.block.TESeedCultivator;
 import com.xiaoxianben.lazymystical.event.ConfigLoader;
 import com.xiaoxianben.lazymystical.event.PacketConsciousness;
 import com.xiaoxianben.lazymystical.init.ModBlocks;
 import com.xiaoxianben.lazymystical.init.ModRecipe;
 import com.xiaoxianben.lazymystical.proxy.CommonProxy;
-import com.xiaoxianben.lazymystical.util.Reference;
+import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
+import com.xiaoxianben.lazymystical.util.ModInformation;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod(modid = Reference.MOD_ID, name = Reference.NAME, version = Reference.VERSION, dependencies = "required-after:mysticalagriculture")
+@Mod(modid = ModInformation.MOD_ID, name = ModInformation.NAME, version = ModInformation.VERSION, dependencies = "required-after:mysticalagriculture")
 public class Main {
 
     public static final List<Item> ITEMS = new ArrayList<>();
@@ -37,7 +37,7 @@ public class Main {
     @Mod.Instance
     public static Main instance;
 
-    @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.COMMON_PROXY_CLASS)
+    @SidedProxy(clientSide = ModInformation.CLIENT_PROXY_CLASS, serverSide = ModInformation.COMMON_PROXY_CLASS)
     public static CommonProxy proxy;
 
     @Mod.EventHandler
@@ -48,12 +48,12 @@ public class Main {
 
     @Mod.EventHandler
     public static void init(FMLInitializationEvent event) {
-        network = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MOD_ID);
+        network = NetworkRegistry.INSTANCE.newSimpleChannel(ModInformation.MOD_ID);
         network.registerMessage(new PacketConsciousness.Handler(), PacketConsciousness.class, 1, Side.CLIENT);
         ModBlocks.init();
         ModRecipe.init();
         NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new GUIHandler());
-        GameRegistry.registerTileEntity(TESeedCultivator.class, new ResourceLocation(Reference.MOD_ID, "block_mystical_tank"));
+        GameRegistry.registerTileEntity(TESeedCultivator.class, new ResourceLocation(ModInformation.MOD_ID, "block_mystical_tank"));
     }
 
     @Mod.EventHandler
@@ -64,7 +64,7 @@ public class Main {
         return network;
     }
 
-    public static CreativeTabs tab = new CreativeTabs(Reference.MOD_ID) {
+    public static CreativeTabs tab = new CreativeTabs(ModInformation.MOD_ID) {
         @Nonnull
         @Override
         public ItemStack getTabIconItem() {

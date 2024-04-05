@@ -1,8 +1,8 @@
 package com.xiaoxianben.lazymystical.block;
 
 import com.xiaoxianben.lazymystical.Main;
-import com.xiaoxianben.lazymystical.util.IHasModel;
-import com.xiaoxianben.lazymystical.util.Reference;
+import com.xiaoxianben.lazymystical.api.IHasModel;
+import com.xiaoxianben.lazymystical.util.ModInformation;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -16,7 +16,7 @@ public class BlockBasic extends Block implements IHasModel {
 
     public BlockBasic(String name, Material materialIn, CreativeTabs tab, int maxStackSize) {
         super(materialIn);
-        setUnlocalizedName(Reference.MOD_ID + '.' + name);
+        setUnlocalizedName(ModInformation.MOD_ID + '.' + name);
         setRegistryName(name);
         setCreativeTab(tab);
 

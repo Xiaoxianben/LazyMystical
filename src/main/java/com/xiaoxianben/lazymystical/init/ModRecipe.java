@@ -1,6 +1,6 @@
 package com.xiaoxianben.lazymystical.init;
 
-import com.xiaoxianben.lazymystical.util.Reference;
+import com.xiaoxianben.lazymystical.util.ModInformation;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -20,7 +20,7 @@ public class ModRecipe {
                 'X', inputBlock
         };
         GameRegistry.addShapedRecipe(outBlock.getRegistryName(),
-                new ResourceLocation(Reference.MOD_ID, "accelerator"),
+                new ResourceLocation(ModInformation.MOD_ID, "accelerator"),
                 Item.getItemFromBlock(outBlock).getDefaultInstance(),
                 params);
     }
@@ -35,8 +35,8 @@ public class ModRecipe {
                 'X', inputBlock
         };
         GameRegistry.addShapedRecipe(
-                new ResourceLocation(Reference.MOD_ID, outBlock.getRegistryName() + "_1"),
-                new ResourceLocation(Reference.MOD_ID, "accelerator"),
+                new ResourceLocation(ModInformation.MOD_ID, outBlock.getRegistryName() + "_1"),
+                new ResourceLocation(ModInformation.MOD_ID, "accelerator"),
                 Item.getItemFromBlock(outBlock).getDefaultInstance(),
                 params);
     }
@@ -57,7 +57,7 @@ public class ModRecipe {
         };
 
         GameRegistry.addShapedRecipe(outBlock.getRegistryName(),
-                new ResourceLocation(Reference.MOD_ID, "seedCultivator"),
+                new ResourceLocation(ModInformation.MOD_ID, "seedCultivator"),
                 Item.getItemFromBlock(outBlock).getDefaultInstance(),
                 params);
     }

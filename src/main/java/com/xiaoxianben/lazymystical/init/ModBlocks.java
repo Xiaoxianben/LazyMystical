@@ -2,7 +2,7 @@ package com.xiaoxianben.lazymystical.init;
 
 import com.xiaoxianben.lazymystical.block.BlockAccelerator;
 import com.xiaoxianben.lazymystical.block.BlockSeedCultivator;
-import com.xiaoxianben.lazymystical.util.Reference;
+import com.xiaoxianben.lazymystical.util.ModInformation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -43,8 +43,8 @@ public class ModBlocks {
             if (i == 1) {
                 ModRecipe.acceleratorRecipe(accelerators[0], strings[0], "gemDiamond");
                 GameRegistry.addShapelessRecipe(
-                        new ResourceLocation(Reference.MOD_ID, Objects.requireNonNull(ModBlocks.accelerators[0].getRegistryName()).getResourcePath() + "_2"),
-                        new ResourceLocation(Reference.MOD_ID, "accelerator1"),
+                        new ResourceLocation(ModInformation.MOD_ID, Objects.requireNonNull(ModBlocks.accelerators[0].getRegistryName()).getResourcePath() + "_2"),
+                        new ResourceLocation(ModInformation.MOD_ID, "accelerator1"),
                         Item.getItemFromBlock(ModBlocks.accelerators[0]).getDefaultInstance(),
                         CraftingHelper.getIngredient(com.blakebr0.mysticalagriculture.blocks.ModBlocks.blockGrowthAccelerator));
 

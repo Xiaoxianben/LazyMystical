@@ -1,10 +1,9 @@
 package com.xiaoxianben.lazymystical.GUI;
 
 
-import com.blakebr0.mysticalagriculture.items.ItemSeed;
 import com.xiaoxianben.lazymystical.block.BlockAccelerator;
-import com.xiaoxianben.lazymystical.block.TESeedCultivator;
 import com.xiaoxianben.lazymystical.slot.IntSlotItemHandler;
+import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -18,9 +17,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class BlockContainer extends Container {
 
     protected int addSlot = 8;
+    protected TESeedCultivator tileEntity;
 
     public BlockContainer(EntityPlayer player, TESeedCultivator tileEntity) {
         super();
+
+        this.tileEntity = tileEntity;
+
         this.addSlotToContainer(new IntSlotItemHandler(tileEntity.getTank(1), 0, 56, 27, 64));
 
         for (int i = 0; i < 5; i++) {
@@ -62,7 +65,7 @@ public class BlockContainer extends Container {
 
             Block block = Block.getBlockFromItem(itemStackOfSlot.getItem());
 
-            boolean isSpecialItems = itemStackOfSlot.getItem() instanceof ItemSeed ||
+            boolean isSpecialItems = this.tileEntity.isTureSeedsItem(itemStackOfSlot.getItem()) ||
                     block instanceof com.blakebr0.mysticalagriculture.blocks.BlockAccelerator ||
                     block instanceof BlockAccelerator;
 
@@ -73,8 +76,8 @@ public class BlockContainer extends Container {
                         return ItemStack.EMPTY;
                     }
                 }
-                // 如果是特殊物品，将物品合并到特定槽中
             } else if (isSpecialItems) {
+                // 如果是特殊物品，将物品合并到特定槽中
                 if (!this.mergeItemStack(itemStackOfSlot, 0, addSlot, false)) {
                     return ItemStack.EMPTY;
                 }

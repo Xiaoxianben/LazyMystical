@@ -1,6 +1,6 @@
 package com.xiaoxianben.lazymystical.GUI;
 
-import com.xiaoxianben.lazymystical.block.TESeedCultivator;
+import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

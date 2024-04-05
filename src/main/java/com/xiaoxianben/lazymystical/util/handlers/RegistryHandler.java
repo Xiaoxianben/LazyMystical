@@ -1,7 +1,7 @@
 package com.xiaoxianben.lazymystical.util.handlers;
 
 import com.xiaoxianben.lazymystical.Main;
-import com.xiaoxianben.lazymystical.util.IHasModel;
+import com.xiaoxianben.lazymystical.api.IHasModel;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;

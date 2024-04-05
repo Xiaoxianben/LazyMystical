@@ -1,6 +1,6 @@
 package com.xiaoxianben.lazymystical.event;
 
-import com.xiaoxianben.lazymystical.block.TESeedCultivator;
+import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,17 +39,16 @@ public class PacketConsciousness implements IMessage {
             //判断是否为客户端（接收端）
             if (ctx.side == Side.CLIENT) {
                 //获取接受数据中"consciousness"这一NBT标识
-                final NBTTagCompound nbt = message.compound.getCompoundTag("consciousness");
-                Minecraft.getMinecraft().addScheduledTask(new Runnable() {
-                    @Override
-                    public void run() {
-                        //获取客户端（接收端）玩家对象
-                        EntityPlayer player = Minecraft.getMinecraft().player;
-                        BlockPos blockPos = new BlockPos(nbt.getInteger("x"), nbt.getInteger("y"), nbt.getInteger("z"));
-                        TESeedCultivator tileEntity = (TESeedCultivator) player.getEntityWorld().getTileEntity(blockPos);
-                        if (tileEntity != null) {
-                            tileEntity.readFromNBT(nbt);
-                        }
+                final NBTTagCompound TileNBT = message.compound.getCompoundTag("TileNBT");
+                final NBTTagCompound updateNBT = message.compound.getCompoundTag("updateNBT");
+                Minecraft.getMinecraft().addScheduledTask(() -> {
+                    //获取客户端（接收端）玩家对象
+                    EntityPlayer player = Minecraft.getMinecraft().player;
+                    BlockPos blockPos = new BlockPos(TileNBT.getInteger("x"), TileNBT.getInteger("y"), TileNBT.getInteger("z"));
+                    TESeedCultivator tileEntity = (TESeedCultivator) player.getEntityWorld().getTileEntity(blockPos);
+                    if (tileEntity != null) {
+                        tileEntity.readFromNBT(TileNBT);
+                        tileEntity.updateNBT(updateNBT);
                     }
                 });
             }
