@@ -45,7 +45,7 @@ public class ConfigLoader {
         return tempInt;
     }
 
-    public static float addFloat(String name, String category, float defaultValue) {
+    public static float addFloat(String category, String name, float defaultValue) {
         return config.getFloat(name, category, defaultValue, 0.0f, Float.MAX_VALUE, I18n.format("config." + name + ".comment"));
     }
 
