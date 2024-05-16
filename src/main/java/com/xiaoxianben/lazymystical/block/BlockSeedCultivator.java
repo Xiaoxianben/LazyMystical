@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,10 +30,12 @@ public class BlockSeedCultivator extends BlockTEBasic implements ITileEntityProv
 
     public int level;
 
-    public BlockSeedCultivator(String name, int level) {
-        super(name, Material.IRON, SoundType.METAL, Main.tab);
+
+    public BlockSeedCultivator(int level) {
+        super("seed_cultivator_" + level, Material.IRON, SoundType.METAL, Main.tab);
         this.level = level;
     }
+
 
     @ParametersAreNonnullByDefault
     @Override
@@ -57,31 +60,28 @@ public class BlockSeedCultivator extends BlockTEBasic implements ITileEntityProv
 
     @ParametersAreNonnullByDefault
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
-        // 获取TileEntity
-        TESeedCultivator compressor = (TESeedCultivator) world.getTileEntity(pos);
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
 
-        if (compressor != null) {
-            for (int i = 0; i < Objects.requireNonNull(compressor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP)).getSlots(); i++) {
-                ItemStack itemstack = Objects.requireNonNull(compressor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.UP)).getStackInSlot(i);
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
 
-                if (!itemstack.isEmpty()) {
-                    ItemStack dropItem = itemstack.copy();
+        if (tileEntity != null && tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
 
-                    EntityItem entityitem = new EntityItem(
-                            world,
-                            (float) pos.getX(),
-                            (float) pos.getY(),
-                            (float) pos.getZ(),
-                            dropItem
-                    );
+            IItemHandler itemHandler = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 
-                    world.spawnEntity(entityitem);
+            Objects.requireNonNull(itemHandler);
+
+            for (int i = 0; i < itemHandler.getSlots(); i++) {
+
+                ItemStack itemStack = itemHandler.getStackInSlot(i);
+
+                if (!itemStack.isEmpty()) {
+                    ItemStack copy = itemStack.copy();
+                    worldIn.spawnEntity(new EntityItem(worldIn, pos.getX(), pos.getY(), pos.getZ(), copy));
                 }
+
             }
         }
-
-        super.breakBlock(world, pos, state);
+        super.breakBlock(worldIn, pos, state);
     }
 
     @ParametersAreNonnullByDefault

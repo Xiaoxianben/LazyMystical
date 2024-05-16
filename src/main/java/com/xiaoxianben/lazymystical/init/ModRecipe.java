@@ -41,19 +41,14 @@ public class ModRecipe {
                 params);
     }
 
-    public static void SeedCultivatorRecipe(Block outBlock, int level) {
-        Object[] material = getMaterial(level);
-        if (material == null) return;
-        String ingot = (String) material[0];
-        String essence = (String) material[1];
-        Block inputBlock = (Block) material[2];
+    public static void SeedCultivatorRecipe(Block outBlock, String blockOre, Block recipeBlock) {
         Object[] params = {
-                "EIE",
-                "IXI",
-                "EIE",
-                'E', essence,
-                'I', ingot,
-                'X', inputBlock
+                "EBE",
+                "BXB",
+                "EBE",
+                'E', blockOre + "Essence",
+                'B', blockOre,
+                'X', recipeBlock
         };
 
         GameRegistry.addShapedRecipe(outBlock.getRegistryName(),
@@ -62,37 +57,4 @@ public class ModRecipe {
                 params);
     }
 
-    public static Object[] getMaterial(int level) {
-        Object[] params = new Object[3];
-        switch (level) {
-            case 1:
-                params[0] = "blockInferium";
-                params[1] = "blockInferiumEssence";
-                params[2] = Block.getBlockFromName("mysticalagriculture:mystical_machine_frame");
-                break;
-            case 2:
-                params[0] = "blockPrudentium";
-                params[1] = "blockPrudentiumEssence";
-                params[2] = ModBlocks.inferiumSeedCultivator;
-                break;
-            case 3:
-                params[0] = "blockIntermedium";
-                params[1] = "blockIntermediumEssence";
-                params[2] = ModBlocks.prudentiumSeedCultivator;
-                break;
-            case 4:
-                params[0] = "blockSuperium";
-                params[1] = "blockSuperiumEssence";
-                params[2] = ModBlocks.intermediumSeedCultivator;
-                break;
-            case 5:
-                params[0] = "blockSupremium";
-                params[1] = "blockSupremiumEssence";
-                params[2] = ModBlocks.superiumSeedCultivator;
-                break;
-            default:
-                return null;
-        }
-        return params;
-    }
 }

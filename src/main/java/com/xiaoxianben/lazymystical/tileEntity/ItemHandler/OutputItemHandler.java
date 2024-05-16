@@ -1,12 +1,13 @@
-package com.xiaoxianben.lazymystical.slot;
+package com.xiaoxianben.lazymystical.tileEntity.ItemHandler;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
-public class slotOut extends ItemStackHandler {
-    public slotOut(int slotMax) {
+public class OutputItemHandler extends ItemStackHandler {
+
+    public OutputItemHandler(int slotMax) {
         super(slotMax);
     }
 

@@ -26,6 +26,7 @@ public class BlockAccelerator extends BlockBasic {
 
     private final int level;
 
+
     public BlockAccelerator(int level) {
         super("accelerator" + level, Material.ROCK, Main.tab, 64);
         this.setSoundType(SoundType.STONE);
@@ -35,6 +36,7 @@ public class BlockAccelerator extends BlockBasic {
 
         this.level = level;
     }
+
 
     @ParametersAreNonnullByDefault
     @SideOnly(Side.CLIENT)
@@ -61,7 +63,8 @@ public class BlockAccelerator extends BlockBasic {
     }
 
     private void growCropsNearby(World world, BlockPos pos, IBlockState state) {
-        Iterable<BlockPos> blocks = BlockPos.getAllInBox(pos.add(0, 1, 0), pos.add(0, 12 * this.level, 0));
+        Iterable<BlockPos> blocks = BlockPos.getAllInBox(pos.up(2), pos.up(12 * this.level + 2));
+
         if (!blocks.iterator().hasNext() || !isEnabled()) {
             world.scheduleBlockUpdate(pos, state.getBlock(), 1, 1);
         } else {
@@ -71,9 +74,8 @@ public class BlockAccelerator extends BlockBasic {
 
                 if (cropBlock instanceof IGrowable || cropBlock instanceof IPlantable) {
                     for (int i = 0; i < this.getLevel(); i++) {
-                        cropBlock.randomTick(world, aoePos, cropState, world.rand);
+                        cropBlock.updateTick(world, aoePos, cropState, world.rand);
                     }
-                    break;
                 }
             }
             worldUpdate(world, pos, state);
@@ -81,9 +83,16 @@ public class BlockAccelerator extends BlockBasic {
     }
 
     private void worldUpdate(World world, BlockPos pos, IBlockState state) {
-        int time = (int) (ConfigLoader.acceleratorSpeed * 20 * ((world.rand.nextInt(3) + 9) / 10.0F) * ((world.rand.nextInt(3) + 9) / 10.0F));
-//        System.out.println("Growth Accelerator: " + time);
+        // 随机的结果在 (0.64~1.21]
+        int time = (int) (ConfigLoader.acceleratorSpeed * 20 * getRandomFloat() * getRandomFloat());
         world.scheduleBlockUpdate(pos, state.getBlock(), time, 1);
+    }
+
+    /**
+     * 随机获取0.8到1.1之间的数
+     */
+    private float getRandomFloat() {
+        return 0.8f + new Random().nextFloat() * 0.3f;
     }
 
     public int getLevel() {

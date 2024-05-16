@@ -16,7 +16,7 @@ public class BlockBasic extends Block implements IHasModel {
 
     public BlockBasic(String name, Material materialIn, CreativeTabs tab, int maxStackSize) {
         super(materialIn);
-        setUnlocalizedName(ModInformation.MOD_ID + '.' + name);
+        setUnlocalizedName(ModInformation.MOD_ID + '-' + name);
         setRegistryName(name);
         setCreativeTab(tab);
 

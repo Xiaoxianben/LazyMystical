@@ -1,32 +1,30 @@
 package com.xiaoxianben.lazymystical.tileEntity;
 
-import com.blakebr0.mysticalagriculture.blocks.crop.BlockInferiumCrop;
-import com.blakebr0.mysticalagriculture.items.ItemSeed;
 import com.xiaoxianben.lazymystical.Main;
 import com.xiaoxianben.lazymystical.api.IUpdateNBT;
 import com.xiaoxianben.lazymystical.block.BlockAccelerator;
+import com.xiaoxianben.lazymystical.event.ConfigLoader;
 import com.xiaoxianben.lazymystical.event.PacketConsciousness;
-import com.xiaoxianben.lazymystical.event.seedUtil;
-import com.xiaoxianben.lazymystical.slot.slotInt;
-import com.xiaoxianben.lazymystical.slot.slotOut;
+import com.xiaoxianben.lazymystical.tileEntity.ItemHandler.InputItemHandler;
+import com.xiaoxianben.lazymystical.tileEntity.ItemHandler.OutputItemHandler;
+import com.xiaoxianben.lazymystical.tileEntity.ItemHandler.SeedItemHandler;
+import com.xiaoxianben.lazymystical.util.seed.SeedUtil;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlockSpecial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
-import scala.util.Random;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Random;
 
 public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNBT {
 
@@ -36,64 +34,59 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
     /**
      * “种子”物品槽
      */
-    protected slotInt seedSlot = new slotInt(1, 64) {
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            Item item = stack.getItem();
-            boolean isTureItem = item instanceof IPlantable;
-            if (item instanceof ItemBlockSpecial) {
-                isTureItem = ((ItemBlockSpecial) item).getBlock() instanceof IPlantable;
-            }
-            return isTureItem && slot == 0;
-        }
-    };
+    protected SeedItemHandler seedSlot;
     /**
      * “加速快”物品槽
      */
-    protected slotInt blockSlot = new slotInt(5, 128) {
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            boolean canInsertItem = false;
-            if (slot < this.stacks.size()) {
-                Block block = Block.getBlockFromItem(stack.getItem());
-                ItemStack itemStackOfSlot = this.getStackInSlot(slot);
-
-                boolean hasEmptyCount = itemStackOfSlot.isEmpty() || stack.getCount() + itemStackOfSlot.getCount() <= itemStackOfSlot.getMaxStackSize();
-
-                boolean isTrueBlock = false;
-                if (block instanceof BlockAccelerator) {
-                    isTrueBlock = slot == ((BlockAccelerator) block).getLevel() - 1;
-                } else if (block instanceof com.blakebr0.mysticalagriculture.blocks.BlockAccelerator) {
-                    isTrueBlock = slot == 0;
-                }
-
-                canInsertItem = isTrueBlock && hasEmptyCount;
-            }
-            return canInsertItem;
-        }
-    };
+    protected InputItemHandler blockSlot;
     /**
-     * "输出"物品槽
-     * 0: 精华
+     * "输出"物品槽 <p>
+     * 0: 精华 <p>
      * 1: 种子
      */
-    protected slotOut outputSlot = new slotOut(2) {
+    protected OutputItemHandler outputSlot = new OutputItemHandler(2) {
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             return false;
         }
-
     };
 
+
+    @SuppressWarnings("unused")
     public TESeedCultivator() {
         this(10);
     }
 
     public TESeedCultivator(int level) {
         this.level = level;
+
+        seedSlot = new SeedItemHandler(1 + level / 6);
+        blockSlot = new InputItemHandler(this.level) {
+            @Override
+            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+                boolean canInsertItem = false;
+                if (slot < this.stacks.size()) {
+                    Block block = Block.getBlockFromItem(stack.getItem());
+                    ItemStack itemStackOfSlot = this.getStackInSlot(slot);
+
+                    boolean hasEmptyCount = itemStackOfSlot.isEmpty() || stack.getCount() + itemStackOfSlot.getCount() <= itemStackOfSlot.getMaxStackSize();
+
+                    boolean isTrueBlock = false;
+                    if (block instanceof BlockAccelerator) {
+                        isTrueBlock = slot == ((BlockAccelerator) block).getLevel() - 1;
+                    } else if (block instanceof com.blakebr0.mysticalagriculture.blocks.BlockAccelerator) {
+                        isTrueBlock = slot == 0;
+                    }
+
+                    canInsertItem = isTrueBlock && hasEmptyCount;
+                }
+                return canInsertItem;
+            }
+        };
     }
 
 
+    @SuppressWarnings("deprecation")
     @Override
     public void update() {
         // 判断是否在 服务器端
@@ -102,7 +95,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         }
 
         // 判断种子槽是否为空 和 输出槽是否满了
-        if (this.seedSlot.getStackInSlot(0).isEmpty() || this.outputSlot.getStackInSlot(0).getCount() == this.outputSlot.getStackInSlot(0).getMaxStackSize()) {
+        if (!canRun()) {
             this.timeRun = -1;
             this.sendUpdatePacket();
             return;
@@ -116,23 +109,27 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
             }
         }
 
+        // 运行过程中, 拿走部分种子
+        if (this.timeRun > this.getMaxTimeRun()) {
+            this.timeRun = (int) this.getMaxTimeRun();
+        }
+
         switch (this.timeRun) {
             case 0:
                 // 判断是否运行完成
-                Item[] items = this.getSeedAndEssence();
-                Item itemSeed = items[0];
-                Item itemEssence = items[1];
+                Object[] items = this.getSeedAndEssence();
+                if (items != null) {
+                    Item itemSeed = (Item) items[0];
+                    ItemStack itemStackEssence = (ItemStack) items[1];
 
-                if (itemSeed != null && itemEssence != null) {
                     int itemSeedCount = this.seedSlot.getStackInSlot(0).getCount();
-                    ItemStack itemEssenceStack = new ItemStack(itemEssence, itemSeedCount);
-
-                    if (itemSeed instanceof IPlantable && ((IPlantable) itemSeed).getPlant(this.getWorld(), this.getPos()).getBlock() instanceof BlockInferiumCrop) {
-                        itemEssenceStack.setCount(((ItemSeed) itemSeed).getTier() * itemSeedCount);
-                    }
+                    ItemStack itemEssenceStack = itemStackEssence.copy();
+                    itemEssenceStack.setCount(Math.min(itemSeedCount, (itemSeed.getItemStackLimit() / SeedUtil.getCropCount(itemSeed))) * SeedUtil.getCropCount(itemSeed));
 
                     this.outputSlot.insertItemPrivate(0, itemEssenceStack, false);
-                    this.outputSlot.insertItemPrivate(1, new ItemStack(itemSeed, (int) ((new Random().nextInt(101)) / 100.0f)), false);
+                    if (ConfigLoader.seedProbability >= 1) {
+                        this.outputSlot.insertItemPrivate(1, new ItemStack(itemSeed, ((new Random()).nextInt(ConfigLoader.seedProbability) == 0) ? 1 : 0), false);
+                    }
                 }
             case -1:
                 // 判断是否运行结束
@@ -140,6 +137,26 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         }
 
         this.sendUpdatePacket();
+    }
+
+
+    public boolean canRun() {
+        if (this.getSeedAndEssence() == null) {
+            return false;
+        }
+        if (!this.outputSlot.insertItemPrivate(0, (ItemStack) this.getSeedAndEssence()[1], true).isEmpty()) {
+            return false;
+        }
+        ItemStack seed = this.seedSlot.getStackInSlot(0);
+        if (this.seedSlot.getSlots() == 2 &&
+                SeedUtil.getSeedToMeta().containsKey(seed.getItem()) &&
+                (this.seedSlot.getStackInSlot(1).isEmpty() ||
+                        SeedUtil.getRootBlockMeta(seed.getItem()) != this.seedSlot.getStackInSlot(1).getMetadata()
+                )
+        ) {
+            return false;
+        }
+        return this.outputSlot.insertItemPrivate(0, (ItemStack) this.getSeedAndEssence()[1], true).isEmpty();
     }
 
     private void sendUpdatePacket() {
@@ -163,17 +180,16 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
 
     public float getMaxTimeRun() {
         ItemStack itemStackSeed = this.seedSlot.getStackInSlot(0);
-        if (itemStackSeed.getItem() instanceof ItemSeed) {
-            int itemSeedCount = itemStackSeed.getCount();
-            int maxSeedCount = itemStackSeed.getMaxStackSize();
+        int itemSeedCount = itemStackSeed.getCount();
+        int maxSeedCount = itemStackSeed.getMaxStackSize();
 
-            if (((IPlantable) itemStackSeed.getItem()).getPlant(this.getWorld(), this.getPos()).getBlock() instanceof BlockInferiumCrop) {
-                maxSeedCount = 64 / ((ItemSeed) itemStackSeed.getItem()).getTier();
-            }
+        int seedTier = SeedUtil.getCropTier(itemStackSeed.getItem());
+        int cropCount = SeedUtil.getCropCount(itemStackSeed.getItem());
+        maxSeedCount = Math.min(maxSeedCount / cropCount, (maxSeedCount - this.outputSlot.getStackInSlot(0).getCount()) / cropCount);
 
-            return 2000.0f * 20 * ((ItemSeed) itemStackSeed.getItem()).getTier() * Math.min(itemSeedCount, maxSeedCount);
-        }
-        return 2000.0f * 20;
+        int effectiveSeedCount = Math.min(itemSeedCount, maxSeedCount);
+
+        return ConfigLoader.seedSpeed * 20.0f * ConfigLoader.seedLevelMultiplier[seedTier - 1] * (1 + (effectiveSeedCount - 1) * ConfigLoader.seedNumberMultiplier);
     }
 
     public int getAllBlockLevel() {
@@ -185,9 +201,9 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
             int blockLevel = 0;
 
             if (block instanceof BlockAccelerator) {
-                blockLevel = ((BlockAccelerator) block).getLevel() * blockNum;
+                blockLevel = (int) (blockNum * ConfigLoader.acceleratorLevelMultiplier[((BlockAccelerator) block).getLevel() - 1]);
             } else if (block instanceof com.blakebr0.mysticalagriculture.blocks.BlockAccelerator) {
-                blockLevel = blockNum;
+                blockLevel = (int) (blockNum * ConfigLoader.acceleratorLevelMultiplier[0]);
             }
 
             allBlockLevel += blockLevel;
@@ -196,32 +212,25 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
     }
 
     /**
-     * @return 格子中的 种子 和 对应的精华
+     * @return [Item, ItemStack] 格子中的 种子(Item) 和 对应的精华(ItemStack)
      */
-    private Item[] getSeedAndEssence() {
-        Item[] items = new Item[]{null, null};
-        Item Item;
+    @Nullable
+    private Object[] getSeedAndEssence() {
+        Object[] items = null;
+
+        Item itemSeed = this.seedSlot.getStackInSlot(0).getItem();
 
         // 判断种子槽是否为空
-        if (!this.seedSlot.getStackInSlot(0).isEmpty()) {
+        if (!this.seedSlot.getStackInSlot(0).isEmpty() && SeedUtil.getCrop(itemSeed) != null) {
             // 获取格子中的种子
-            Item = this.seedSlot.getStackInSlot(0).getItem();
-
-            items[0] = Item;
-            items[1] = seedUtil.getCrop(Item, this.getWorld(), this.getPos());
-
+            items = new Object[2];
+            items[0] = itemSeed;
+            items[1] = SeedUtil.getCrop(itemSeed);
         }
 
         return items;
     }
 
-    public boolean isTureSeedsItem(Item item) {
-        boolean isTureItem = item instanceof IPlantable;
-        if (item instanceof ItemBlockSpecial) {
-            isTureItem = ((ItemBlockSpecial) item).getBlock() instanceof IPlantable;
-        }
-        return isTureItem;
-    }
 
     @ParametersAreNonnullByDefault
     @Nullable
@@ -236,7 +245,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
     @ParametersAreNonnullByDefault
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+        return this.getCapability(capability, facing) != null;
     }
 
     // NBT
@@ -250,6 +259,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         blockSlot.deserializeNBT(slotNBT.getCompoundTag("block"));
         outputSlot.deserializeNBT(slotNBT.getCompoundTag("out"));
 
+        this.level = compound.getInteger("level");
     }
 
     @Nonnull
@@ -263,6 +273,8 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         slotNBT.setTag("block", blockSlot.serializeNBT());
         slotNBT.setTag("out", outputSlot.serializeNBT());
         compound.setTag("slot", slotNBT);
+
+        compound.setInteger("level", this.level);
 
         return compound;
     }

@@ -2,8 +2,8 @@
     "forge_marker": 1,
     "defaults": {
         "textures": {
-            "side": "lazymystical:blocks/machine/1_side",
-            "front": "lazymystical:blocks/machine/1"
+            "side": "lazymystical:blocks/machine/3_side",
+            "front": "lazymystical:blocks/machine/3"
         },
         "model": "lazymystical:machine"
     },

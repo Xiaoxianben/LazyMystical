@@ -28,7 +28,7 @@ apply plugin: "net.minecraftforge.gradle.forge"
 apply from: "runmanager.gradle"
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-version = "1.0.2"
+version = "1.1.0"
 group = "com.xiaoxianben.lazymystical" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "lazymystical-1.12.2"
 
@@ -54,6 +54,16 @@ repositories {
     maven {
         url "https://www.cursemaven.com"
     }
+    // Other repositories can go above or below Modrinth's. We don't need priority :)
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
 }
 
 dependencies {
@@ -66,7 +76,12 @@ dependencies {
     //compile "com.mod-buildcraft:buildcraft:6.0.8:dev"  // adds buildcraft to the dev env
     //compile "com.googlecode.efficient-java-matrix-library:ejml:0.24" // adds ejml to the dev env
 
-    compile "curse.maven:mysticalagriculture-246640:2704562"
+    implementation "maven.modrinth:Rw1NrDzF:qGk4NMk6" // cucumber
+    implementation "maven.modrinth:C95ReXie:tkG0KX4G" // mysticalagriculture
+    implementation "maven.modrinth:pl0jGXIx:fNIXv2Jz" // mysticalagradditions
+
+    compile "mezz.jei:jei_${project.minecraft.version}:${jei_version}:api"
+    runtime "mezz.jei:jei_${project.minecraft.version}:${jei_version}"
 
     // the "provided" configuration is for optional dependencies that exist at compile-time but might not at runtime.
     //provided "com.mod-buildcraft:buildcraft:6.0.8:dev"
@@ -98,5 +113,17 @@ processResources {
     // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude "mcmod.info"
+    }
+}
+
+task buildJar(type: Delete) {
+    delete "D:\\3.Bian-Chen\\3.2.java\\Forge\\LazyMystical\\build\\combined"
+    delete "D:\\3.Bian-Chen\\3.2.java\\Forge\\LazyMystical\\build\\retromapping"
+    delete "D:\\3.Bian-Chen\\3.2.java\\Forge\\LazyMystical\\build\\sources"
+    delete "D:\\3.Bian-Chen\\3.2.java\\Forge\\LazyMystical\\build\\tmp"
+
+    dependsOn 'build'
+    doLast {
+        println "Jar is building now."
     }
 }

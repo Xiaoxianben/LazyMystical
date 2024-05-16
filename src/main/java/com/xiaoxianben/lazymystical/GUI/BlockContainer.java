@@ -1,10 +1,8 @@
 package com.xiaoxianben.lazymystical.GUI;
 
 
-import com.xiaoxianben.lazymystical.block.BlockAccelerator;
-import com.xiaoxianben.lazymystical.slot.IntSlotItemHandler;
+import com.xiaoxianben.lazymystical.slot.SlotInputItemHandler;
 import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -13,25 +11,24 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockContainer extends Container {
 
-    protected int addSlot = 8;
+    protected int addSlotCount = 3;
+
+    protected List<Rectangle> BlockRectangles = new ArrayList<>();
+
+
     protected TESeedCultivator tileEntity;
+
 
     public BlockContainer(EntityPlayer player, TESeedCultivator tileEntity) {
         super();
 
         this.tileEntity = tileEntity;
-
-        this.addSlotToContainer(new IntSlotItemHandler(tileEntity.getTank(1), 0, 56, 27, 64));
-
-        for (int i = 0; i < 5; i++) {
-            this.addSlotToContainer(new IntSlotItemHandler(tileEntity.getTank(2), i, 20 + i * 18, 49, 128));
-        }
-
-        this.addSlotToContainer(new SlotItemHandler(tileEntity.getTank(3), 0, 116, 27));
-        this.addSlotToContainer(new SlotItemHandler(tileEntity.getTank(3), 1, 138, 27));
 
         //将玩家物品槽第一行（快捷栏）加入容器
         for (int i = 0; i < 9; ++i) {
@@ -44,7 +41,22 @@ public class BlockContainer extends Container {
             }
         }
 
+        // 将容器格子添加进入容器
+        this.addSlotToContainer(new SlotInputItemHandler(tileEntity.getTank(1), 0, 39, 33));
+        if (tileEntity.getTank(1).getSlots() == 2) {
+            this.addSlotToContainer(new SlotInputItemHandler(tileEntity.getTank(1), 1, 39, 33 + 18));
+            addSlotCount++;
+        }
+        for (int i = 0; i < tileEntity.getTank(2).getSlots(); i++) {
+            this.BlockRectangles.add(new Rectangle(-18, 18 * i, 18, 18));
+            this.addSlotToContainer(new SlotInputItemHandler(tileEntity.getTank(2), i, -17, 1 + 18 * i));
+            addSlotCount++;
+        }
+        this.addSlotToContainer(new SlotItemHandler(tileEntity.getTank(3), 0, 99, 33));
+        this.addSlotToContainer(new SlotItemHandler(tileEntity.getTank(3), 1, 121, 33));
+
     }
+
 
     @ParametersAreNonnullByDefault
     @Override
@@ -63,32 +75,17 @@ public class BlockContainer extends Container {
             ItemStack itemStackOfSlot = slot.getStack();
             itemstack = itemStackOfSlot.copy();
 
-            Block block = Block.getBlockFromItem(itemStackOfSlot.getItem());
-
-            boolean isSpecialItems = this.tileEntity.isTureSeedsItem(itemStackOfSlot.getItem()) ||
-                    block instanceof com.blakebr0.mysticalagriculture.blocks.BlockAccelerator ||
-                    block instanceof BlockAccelerator;
-
-            // 如果是在特殊格子
-            if (slotNumber < addSlot) {
-                if (!this.mergeItemStack(itemStackOfSlot, (9 + addSlot), (36 + addSlot), false)) {
-                    if (!this.mergeItemStack(itemStackOfSlot, addSlot, (9 + addSlot), false)) {
+            // 如果是在背包格子
+            if (slotNumber < 36) {
+                if (!this.mergeItemStack(itemStackOfSlot, 36, 36 + this.addSlotCount - 2, false)) {
+                    int startIndex = slotNumber < 9 ? 9 : 0;
+                    int endIndex = slotNumber < 9 ? 36 : 9;
+                    if (!this.mergeItemStack(itemStackOfSlot, startIndex, endIndex, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
-            } else if (isSpecialItems) {
-                // 如果是特殊物品，将物品合并到特定槽中
-                if (!this.mergeItemStack(itemStackOfSlot, 0, addSlot, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (slotNumber < (9 + addSlot)) {
-                // 如果是 物品槽第一行，将物品合并到 背包槽中
-                if (!this.mergeItemStack(itemStackOfSlot, (9 + addSlot), (36 + addSlot), false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (slotNumber >= (9 + addSlot) && slotNumber < (36 + addSlot)) {
-                // 如果是 背包槽，将物品合并到 物品槽第一行
-                if (!this.mergeItemStack(itemStackOfSlot, addSlot, (9 + addSlot), false)) {
+            } else {
+                if (!this.mergeItemStack(itemStackOfSlot, 0, 36, false)) {
                     return ItemStack.EMPTY;
                 }
             }
@@ -105,6 +102,10 @@ public class BlockContainer extends Container {
             slot.onTake(player, itemStackOfSlot);
         }
         return itemstack;
+    }
+
+    public List<Rectangle> getGuiExtraAreas() {
+        return this.BlockRectangles;
     }
 
 }

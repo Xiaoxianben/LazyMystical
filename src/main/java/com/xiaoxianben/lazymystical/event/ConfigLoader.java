@@ -9,12 +9,20 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nonnull;
 
 public class ConfigLoader {
-    private static Configuration config;
 
-    private static Logger logger;
+    public static String cultivatorCategory = "cultivator";
+
 
     public static int acceleratorSpeed;
+    public static int seedProbability;
+    public static int seedSpeed;
+    public static float seedNumberMultiplier;
+    public static int[] seedLevelMultiplier;
+    public static double[] acceleratorLevelMultiplier;
 
+
+    private static Configuration config;
+    private static Logger logger;
 
     public static void preInitConfigLoader(@Nonnull FMLPreInitializationEvent event) {
         logger = event.getModLog();
@@ -28,49 +36,57 @@ public class ConfigLoader {
     }
 
     public static int addInt(String name, int defaultValue) {
-        return addInt(name, defaultValue, "config." + name + ".comment");
+        return addInt(Configuration.CATEGORY_GENERAL, name, defaultValue);
     }
 
-    public static int addInt(String name, int defaultValue, String common) {
-        int tempInt = config.getInt(name, Configuration.CATEGORY_GENERAL, defaultValue, 1, Integer.MAX_VALUE, I18n.format(common));
+    public static int addInt(String category, String name, int defaultValue) {
+        int tempInt = config.getInt(name, category, defaultValue, 1, Integer.MAX_VALUE, I18n.format("config." + name + ".comment"));
         config.save();
         return tempInt;
     }
 
-    public static long addLong(String name, long defaultValue) {
-        return addLong(name, defaultValue, I18n.format("config." + name + ".comment"));
+    public static float addFloat(String name, String category, float defaultValue) {
+        return config.getFloat(name, category, defaultValue, 0.0f, Float.MAX_VALUE, I18n.format("config." + name + ".comment"));
     }
 
-    public static long addLong(String name, long defaultValue, String common) {
-        Property tempProperty = config.get(Configuration.CATEGORY_GENERAL, name, Long.toString(defaultValue), common, Property.Type.INTEGER);
-        tempProperty.setMinValue(0);
-        tempProperty.setMaxValue(Long.MAX_VALUE);
-        tempProperty.setComment(tempProperty.getComment() + " [range: 0 ~ " + Long.MAX_VALUE + ", default: " + defaultValue + "]");
+    public static int[] addIntLIst(String category, String name, int[] defaultValue) {
+        String common = I18n.format("config." + name + ".comment");
+        Property tempProperty = config.get(category, name, defaultValue, common, 0, Integer.MAX_VALUE, true, defaultValue.length);
 
-        long returnLong = tempProperty.getLong();
+        int[] returnIntLIst = tempProperty.getIntList();
         config.save();
-        return returnLong;
+        return returnIntLIst;
+    }
+
+    public static double[] addDoubleLIst(String category, String name, float[] defaultValue) {
+        String common = I18n.format("config." + name + ".comment");
+        double[] defaultValueDouble = new double[defaultValue.length];
+        for (int i = 0; i < defaultValue.length; i++) {
+            defaultValueDouble[i] = defaultValue[i];
+        }
+        Property tempProperty = config.get(category, name, defaultValueDouble, common, 0.0, Float.MAX_VALUE, true, defaultValue.length);
+
+        double[] returnIntLIst = tempProperty.getDoubleList();
+        config.save();
+        return returnIntLIst;
     }
 
     public static void load() {
         logger.info("Started loading config.");
 
         acceleratorSpeed = addInt("acceleratorSpeed", 10);
-        //forge配置文件中会有多个类别，forge提供了general(Configuration.CATEGORY_GENERAL)
-        //get函数的第一个参数就是表示general类型
-        //get的第二个参数就是配置文件中的键的名称(难以看懂)
-        //get的第三个参数就是键的默认值(默认100),如果该键不存在，返回默认值
-        //get的第四个参数是该键的注释，就是获取basicAmountOfFluidToProduceEnergy相对应的值,getInt函数的作用就是获取整数（配置文件里面键的值一定是字符串）
-        //从这里阔以看出get就是为了获取diamondBurnTime的值
+
+        config.setCategoryComment(cultivatorCategory, I18n.format("category." + cultivatorCategory + ".comment"));
+        seedProbability = addInt(cultivatorCategory, "seedProbability", 100);
+        seedSpeed = addInt(cultivatorCategory, "seedSpeed", 2000);
+        seedNumberMultiplier = addFloat(cultivatorCategory, "seedNumberMultiplier", 1.0f);
+        seedLevelMultiplier = addIntLIst(cultivatorCategory, "seedLevelMultiplier", new int[]{1, 2, 3, 4, 5, 6});
+        acceleratorLevelMultiplier = addDoubleLIst(cultivatorCategory, "acceleratorLevelMultiplier", new float[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
 
         config.save(); //保存配置
         //至于为什么要保存配置呢？这是因为当配置缺失（最常见的原因就是配置文件没有创建，
         //这常常发生在你第一次使用Mod的时候）的时候，这一句会将默认的配置保存下来。
         logger.info("Finished loading config."); //输出完成加载配置文件
-    }
-
-    public static Logger logger() {
-        return logger;
     }
 
 }

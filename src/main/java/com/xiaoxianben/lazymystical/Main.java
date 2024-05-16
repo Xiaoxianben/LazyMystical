@@ -8,6 +8,7 @@ import com.xiaoxianben.lazymystical.init.ModRecipe;
 import com.xiaoxianben.lazymystical.proxy.CommonProxy;
 import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
 import com.xiaoxianben.lazymystical.util.ModInformation;
+import com.xiaoxianben.lazymystical.util.seed.SeedUtil;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -27,7 +28,13 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod(modid = ModInformation.MOD_ID, name = ModInformation.NAME, version = ModInformation.VERSION, dependencies = "required-after:mysticalagriculture")
+@Mod(
+        modid = ModInformation.MOD_ID,
+        name = ModInformation.NAME,
+        version = ModInformation.VERSION,
+        acceptedMinecraftVersions = ModInformation.ACCEPTED_VERSION,
+        dependencies = "required-after:mysticalagriculture;after:mysticalagradditions"
+)
 public class Main {
 
     public static final List<Item> ITEMS = new ArrayList<>();
@@ -58,7 +65,9 @@ public class Main {
 
     @Mod.EventHandler
     public static void postInit(FMLPostInitializationEvent event) {
+        SeedUtil.init();
     }
+
 
     public static SimpleNetworkWrapper getNetwork() {
         return network;
@@ -68,7 +77,7 @@ public class Main {
         @Nonnull
         @Override
         public ItemStack getTabIconItem() {
-            return Item.getItemFromBlock(ModBlocks.inferiumSeedCultivator).getDefaultInstance();
+            return Item.getItemFromBlock(ModBlocks.seedCultivators[0]).getDefaultInstance();
         }
     };
 

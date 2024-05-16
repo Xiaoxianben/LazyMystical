@@ -1,23 +1,17 @@
-package com.xiaoxianben.lazymystical.slot;
+package com.xiaoxianben.lazymystical.tileEntity.ItemHandler;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
-public class slotInt extends ItemStackHandler {
+public class InputItemHandler extends ItemStackHandler {
 
-    protected int slotLimit;
 
-    public slotInt(int slotMax, int slotLimit) {
+    public InputItemHandler(int slotMax) {
         super(slotMax);
-        this.slotLimit = slotLimit;
     }
 
-    @Override
-    public int getSlotLimit(int slot) {
-        return slotLimit;
-    }
 
     @Override
     @Nonnull

@@ -28,18 +28,23 @@ public class BlockTEBasic extends BlockContainer implements IHasModel {
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
+
     protected BlockTEBasic(String name, Material materialIn, SoundType soundType, CreativeTabs tab) {
         super(materialIn);
-        setUnlocalizedName(ModInformation.MOD_ID + '.' + name);
+        setUnlocalizedName(ModInformation.MOD_ID + '-' + name);
         setRegistryName(name);
         setSoundType(soundType);
         setCreativeTab(tab);
+
+        this.setHardness(10.0F);
+        this.setHarvestLevel("pickaxe", 1);
 
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 
         Main.BLOCKS.add(this);
         Main.ITEMS.add(new ItemBlock(this).setRegistryName(name));
     }
+
 
     @Override
     public void registerModels() {
@@ -52,6 +57,7 @@ public class BlockTEBasic extends BlockContainer implements IHasModel {
         worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()));
     }
 
+    @SuppressWarnings("deprecation")
     @Nonnull
     @Override
     public IBlockState getStateFromMeta(int meta) {
