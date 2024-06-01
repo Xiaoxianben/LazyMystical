@@ -29,6 +29,7 @@ import java.util.Random;
 public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNBT {
 
     public int timeRun = -1;
+    public int maxTimeRun = 0;
     public int level;
 
     /**
@@ -44,12 +45,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
      * 0: 精华 <p>
      * 1: 种子
      */
-    protected OutputItemHandler outputSlot = new OutputItemHandler(2) {
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return false;
-        }
-    };
+    protected OutputItemHandler outputSlot;
 
 
     @SuppressWarnings("unused")
@@ -60,7 +56,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
     public TESeedCultivator(int level) {
         this.level = level;
 
-        seedSlot = new SeedItemHandler(1 + level / 6);
+        seedSlot = new SeedItemHandler(1 + level / 6, this);
         blockSlot = new InputItemHandler(this.level) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
@@ -83,6 +79,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
                 return canInsertItem;
             }
         };
+        outputSlot = new OutputItemHandler(2, this);
     }
 
 
@@ -97,6 +94,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         // 判断种子槽是否为空 和 输出槽是否满了
         if (!canRun()) {
             this.timeRun = -1;
+            this.maxTimeRun = 0;
             this.sendUpdatePacket();
             return;
         }
@@ -107,11 +105,6 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
             if (this.timeRun < 0) {
                 this.timeRun = 0;
             }
-        }
-
-        // 运行过程中, 拿走部分种子
-        if (this.timeRun > this.getMaxTimeRun()) {
-            this.timeRun = (int) this.getMaxTimeRun();
         }
 
         switch (this.timeRun) {
@@ -132,13 +125,24 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
                     }
                 }
             case -1:
-                // 判断是否运行结束
+                // 判断是否初次运行
                 this.timeRun = (int) this.getMaxTimeRun();
+                this.maxTimeRun = this.timeRun;
         }
 
         this.sendUpdatePacket();
     }
 
+
+    /**
+     * 更新还在运行中的自身，重新改变运行状态。
+     */
+    public void updateThis() {
+        if (this.maxTimeRun != ((int) this.getMaxTimeRun())) {
+            this.maxTimeRun = (int) this.getMaxTimeRun();
+            this.timeRun = this.maxTimeRun;
+        }
+    }
 
     public boolean canRun() {
         if (this.getSeedAndEssence() == null) {
@@ -161,21 +165,9 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
 
     private void sendUpdatePacket() {
         NBTTagCompound updateNBT = new NBTTagCompound();
-        updateNBT.setTag("TileNBT", this.getUpdateTag());
+        updateNBT.setTag("TileNBT", this.writeToNBT(new NBTTagCompound()));
         updateNBT.setTag("updateNBT", this.getUpdateNBT());
         Main.getNetwork().sendToAll(new PacketConsciousness(updateNBT));
-    }
-
-    public IItemHandler getTank(int slot) {
-        switch (slot) {
-            case 1:
-                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(seedSlot);
-            case 2:
-                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(blockSlot);
-            case 3:
-                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(outputSlot);
-        }
-        return null;
     }
 
     public float getMaxTimeRun() {
@@ -190,6 +182,18 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         int effectiveSeedCount = Math.min(itemSeedCount, maxSeedCount);
 
         return ConfigLoader.seedSpeed * 20.0f * ConfigLoader.seedLevelMultiplier[seedTier - 1] * (1 + (effectiveSeedCount - 1) * ConfigLoader.seedNumberMultiplier);
+    }
+
+    public IItemHandler getItemHandler(int slot) {
+        switch (slot) {
+            case 1:
+                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(seedSlot);
+            case 2:
+                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(blockSlot);
+            case 3:
+                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(outputSlot);
+        }
+        return null;
     }
 
     public int getAllBlockLevel() {
@@ -248,6 +252,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         return this.getCapability(capability, facing) != null;
     }
 
+
     // NBT
     @ParametersAreNonnullByDefault
     public void readFromNBT(NBTTagCompound compound) {
@@ -280,20 +285,16 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
     }
 
     @Override
-    @Nonnull
-    public NBTTagCompound getUpdateTag() {
-        return this.writeToNBT(new NBTTagCompound());
-    }
-
-    @Override
     public void updateNBT(NBTTagCompound NBT) {
         this.timeRun = NBT.getInteger("timeRun");
+        this.maxTimeRun = NBT.getInteger("maxTimeRun");
     }
 
     @Override
     public NBTTagCompound getUpdateNBT() {
         NBTTagCompound NBT = new NBTTagCompound();
         NBT.setInteger("timeRun", timeRun);
+        NBT.setInteger("maxTimeRun", maxTimeRun);
         return NBT;
     }
 }
