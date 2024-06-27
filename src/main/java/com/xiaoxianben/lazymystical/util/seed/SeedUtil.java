@@ -26,14 +26,19 @@ import java.util.*;
 public class SeedUtil {
 
 
-    public static AgradditionsMoaUtil agradditionsMoaUtil = null;
+    /**
+     * 用于处理附属的模组
+     */
+    public static AgradditionsModUtil agradditionsModUtil = null;
+    /**
+     * 字典：用于获取种子对应的作物
+     */
     protected static LinkedHashMap<Item, ItemStack> seedTOCrop = new LinkedHashMap<>();
-    protected static LinkedHashMap<Item, Integer> seedToMeta = new LinkedHashMap<>();
 
 
     public static void init() {
         if (Loader.isModLoaded("mysticalagradditions")) {
-            agradditionsMoaUtil = new AgradditionsMoaUtil(seedToMeta);
+            agradditionsModUtil = new AgradditionsModUtil(new HashMap<>());
         }
 
         ForgeRegistry<Item> registry = (ForgeRegistry<Item>) GameRegistry.findRegistry(Item.class);
@@ -43,8 +48,8 @@ public class SeedUtil {
                 .sorted(Comparator.comparingInt(registry::getID))
                 .forEach(seed -> {
                     seedTOCrop.put(seed, getCropPrivate(seed));
-                    if (agradditionsMoaUtil != null) {
-                        agradditionsMoaUtil.init(seed);
+                    if (agradditionsModUtil != null) {
+                        agradditionsModUtil.init(seed);
                     }
                 });
 
@@ -116,35 +121,38 @@ public class SeedUtil {
         return seedTOCrop;
     }
 
-    public static HashMap<Item, Integer> getSeedToMeta() {
-        return seedToMeta;
-    }
-
     public static int getCropCount(Item seed) {
         if (seed instanceof IPlantable) {
             if (((IPlantable) seed).getPlant(null, null).getBlock() instanceof BlockInferiumCrop) {
                 return ((ItemSeed) seed).getTier();
             }
-            if (agradditionsMoaUtil != null) {
-                return agradditionsMoaUtil.getCropCount(seed);
+            if (agradditionsModUtil != null) {
+                return agradditionsModUtil.getCropCount(seed);
             }
         }
         return 1;
     }
 
     public static boolean isTier6Seed(Item seed) {
-        return agradditionsMoaUtil != null && agradditionsMoaUtil.isTier6Seed(seed);
+        return agradditionsModUtil != null && agradditionsModUtil.isTier6Seed(seed);
     }
 
+    /**
+     * 如果没有相应的rootBlockMeta，返回 -1 <p></p>
+     * 否则 返回 相应的rootBlockMeta
+     */
     public static int getRootBlockMeta(Item seed) {
-        return seedToMeta.get(seed) == null ? -1 : seedToMeta.get(seed);
+        return agradditionsModUtil == null ? -1 : agradditionsModUtil.getRootBlockMeta(seed);
     }
 
+    /**
+     * 是否为 rootBlock，6级种子的额外方块
+     */
     public static boolean isRootBlock(ItemStack rootBlock) {
-        return agradditionsMoaUtil != null && agradditionsMoaUtil.isRootBlock(rootBlock);
+        return agradditionsModUtil != null && agradditionsModUtil.isRootBlock(rootBlock);
     }
 
-    public static int getCropTier(Item seed) {
+    public static int getSeedTier(Item seed) {
         if (seed instanceof ItemSeed) {
             return ((ItemSeed) seed).getTier();
         }

@@ -1,15 +1,13 @@
 package com.xiaoxianben.lazymystical.init;
 
+import com.xiaoxianben.lazymystical.api.IModInit;
 import com.xiaoxianben.lazymystical.util.ModInformation;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class ModRecipe {
-    public static void init() {
-    }
-
+public class ModRecipe implements IModInit {
     public static void acceleratorRecipe(Block outBlock, String block, String inputBlock) {
         Object[] params = {
                 "SIS",
@@ -55,6 +53,17 @@ public class ModRecipe {
                 new ResourceLocation(ModInformation.MOD_ID, "seedCultivator"),
                 Item.getItemFromBlock(outBlock).getDefaultInstance(),
                 params);
+    }
+
+    public void preInit() {
+    }
+
+    public void init() {
+    }
+
+    @Override
+    public void postInit() {
+
     }
 
 }

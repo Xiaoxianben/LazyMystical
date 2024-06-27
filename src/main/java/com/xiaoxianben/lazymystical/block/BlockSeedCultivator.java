@@ -2,6 +2,7 @@ package com.xiaoxianben.lazymystical.block;
 
 import com.xiaoxianben.lazymystical.GUI.GUIHandler;
 import com.xiaoxianben.lazymystical.Main;
+import com.xiaoxianben.lazymystical.init.ModBlocks;
 import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -32,7 +33,7 @@ public class BlockSeedCultivator extends BlockTEBasic implements ITileEntityProv
 
 
     public BlockSeedCultivator(int level) {
-        super("seed_cultivator_" + level, Material.IRON, SoundType.METAL, Main.tab);
+        super("seed_cultivator_" + level, Material.IRON, SoundType.METAL, Main.tab, ModBlocks.allSeedCultivators);
         this.level = level;
     }
 

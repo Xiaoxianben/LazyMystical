@@ -3,7 +3,8 @@ package com.xiaoxianben.lazymystical.block;
 import com.blakebr0.mysticalagriculture.config.ModConfig;
 import com.blakebr0.mysticalagriculture.lib.Tooltips;
 import com.xiaoxianben.lazymystical.Main;
-import com.xiaoxianben.lazymystical.event.ConfigLoader;
+import com.xiaoxianben.lazymystical.config.ConfigValue;
+import com.xiaoxianben.lazymystical.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.SoundType;
@@ -28,10 +29,7 @@ public class BlockAccelerator extends BlockBasic {
 
 
     public BlockAccelerator(int level) {
-        super("accelerator" + level, Material.ROCK, Main.tab, 64);
-        this.setSoundType(SoundType.STONE);
-        this.setHardness(5.0F);
-        this.setResistance(8.0F);
+        super("accelerator" + level, Material.ROCK, SoundType.STONE, Main.tab, ModBlocks.allAccelerators);
         this.setTickRandomly(false);
 
         this.level = level;
@@ -84,7 +82,7 @@ public class BlockAccelerator extends BlockBasic {
 
     private void worldUpdate(World world, BlockPos pos, IBlockState state) {
         // 随机的结果在 (0.64~1.21]
-        int time = (int) (ConfigLoader.acceleratorSpeed * 20 * getRandomFloat() * getRandomFloat());
+        int time = (int) (ConfigValue.acceleratorSpeed * 20 * getRandomFloat() * getRandomFloat());
         world.scheduleBlockUpdate(pos, state.getBlock(), time, 1);
     }
 

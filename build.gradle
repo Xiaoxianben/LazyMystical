@@ -117,10 +117,10 @@ processResources {
 }
 
 task buildJar(type: Delete) {
-    delete "D:\\3.Bian-Chen\\3.2.java\\Forge\\LazyMystical\\build\\combined"
-    delete "D:\\3.Bian-Chen\\3.2.java\\Forge\\LazyMystical\\build\\retromapping"
-    delete "D:\\3.Bian-Chen\\3.2.java\\Forge\\LazyMystical\\build\\sources"
-    delete "D:\\3.Bian-Chen\\3.2.java\\Forge\\LazyMystical\\build\\tmp"
+    delete "build\\combined"
+    delete "build\\retromapping"
+    delete "build\\sources"
+    delete "build\\tmp"
 
     dependsOn 'build'
     doLast {

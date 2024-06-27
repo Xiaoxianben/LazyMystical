@@ -1,6 +1,5 @@
-package com.xiaoxianben.lazymystical.event;
+package com.xiaoxianben.lazymystical.config;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -12,17 +11,9 @@ public class ConfigLoader {
 
     public static String cultivatorCategory = "cultivator";
 
-
-    public static int acceleratorSpeed;
-    public static int seedProbability;
-    public static int seedSpeed;
-    public static float seedNumberMultiplier;
-    public static int[] seedLevelMultiplier;
-    public static double[] acceleratorLevelMultiplier;
-
-
     private static Configuration config;
     private static Logger logger;
+
 
     public static void preInitConfigLoader(@Nonnull FMLPreInitializationEvent event) {
         logger = event.getModLog();
@@ -35,22 +26,19 @@ public class ConfigLoader {
         load();
     }
 
-    public static int addInt(String name, int defaultValue) {
-        return addInt(Configuration.CATEGORY_GENERAL, name, defaultValue);
-    }
 
     public static int addInt(String category, String name, int defaultValue) {
-        int tempInt = config.getInt(name, category, defaultValue, 1, Integer.MAX_VALUE, I18n.format("config." + name + ".comment"));
+        int tempInt = config.getInt(name, category, defaultValue, 1, Integer.MAX_VALUE, I18n.translateToLocal("config." + name + ".comment"));
         config.save();
         return tempInt;
     }
 
     public static float addFloat(String category, String name, float defaultValue) {
-        return config.getFloat(name, category, defaultValue, 0.0f, Float.MAX_VALUE, I18n.format("config." + name + ".comment"));
+        return config.getFloat(name, category, defaultValue, 0.0f, Float.MAX_VALUE, I18n.translateToLocal("config." + name + ".comment"));
     }
 
     public static int[] addIntLIst(String category, String name, int[] defaultValue) {
-        String common = I18n.format("config." + name + ".comment");
+        String common = I18n.translateToLocal("config." + name + ".comment");
         Property tempProperty = config.get(category, name, defaultValue, common, 0, Integer.MAX_VALUE, true, defaultValue.length);
 
         int[] returnIntLIst = tempProperty.getIntList();
@@ -59,7 +47,7 @@ public class ConfigLoader {
     }
 
     public static double[] addDoubleLIst(String category, String name, float[] defaultValue) {
-        String common = I18n.format("config." + name + ".comment");
+        String common = I18n.translateToLocal("config." + name + ".comment");
         double[] defaultValueDouble = new double[defaultValue.length];
         for (int i = 0; i < defaultValue.length; i++) {
             defaultValueDouble[i] = defaultValue[i];
@@ -74,14 +62,15 @@ public class ConfigLoader {
     public static void load() {
         logger.info("Started loading config.");
 
-        acceleratorSpeed = addInt("acceleratorSpeed", 10);
+        config.setCategoryComment(cultivatorCategory, I18n.translateToLocal("category." + cultivatorCategory + ".comment"));
 
-        config.setCategoryComment(cultivatorCategory, I18n.format("category." + cultivatorCategory + ".comment"));
-        seedProbability = addInt(cultivatorCategory, "seedProbability", 100);
-        seedSpeed = addInt(cultivatorCategory, "seedSpeed", 2000);
-        seedNumberMultiplier = addFloat(cultivatorCategory, "seedNumberMultiplier", 1.0f);
-        seedLevelMultiplier = addIntLIst(cultivatorCategory, "seedLevelMultiplier", new int[]{1, 2, 3, 4, 5, 6});
-        acceleratorLevelMultiplier = addDoubleLIst(cultivatorCategory, "acceleratorLevelMultiplier", new float[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
+        ConfigValue.acceleratorSpeed = addInt(Configuration.CATEGORY_GENERAL, "acceleratorSpeed", 10);
+
+        ConfigValue.seedProbability = addInt(cultivatorCategory, "seedProbability", 100);
+        ConfigValue.seedSpeed = addInt(cultivatorCategory, "seedSpeed", 2000);
+        ConfigValue.seedNumberMultiplier = addFloat(cultivatorCategory, "seedNumberMultiplier", 1.0f);
+        ConfigValue.seedLevelMultiplier = addIntLIst(cultivatorCategory, "seedLevelMultiplier", new int[]{1, 2, 3, 4, 5, 6});
+        ConfigValue.acceleratorLevelMultiplier = addDoubleLIst(cultivatorCategory, "acceleratorLevelMultiplier", new float[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f});
 
         config.save(); //保存配置
         //至于为什么要保存配置呢？这是因为当配置缺失（最常见的原因就是配置文件没有创建，

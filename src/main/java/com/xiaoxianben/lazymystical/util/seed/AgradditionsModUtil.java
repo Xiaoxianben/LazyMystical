@@ -9,14 +9,17 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.IPlantable;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 
-public class AgradditionsMoaUtil {
+public class AgradditionsModUtil {
 
-    protected LinkedHashMap<Item, Integer> seedMap;
+    /**
+     * 字典：用于获取种子对应的6级额外方块的meta值
+     */
+    protected HashMap<Item, Integer> seedMap;
 
 
-    public AgradditionsMoaUtil(LinkedHashMap<Item, Integer> seedMap) {
+    public AgradditionsModUtil(HashMap<Item, Integer> seedMap) {
         this.seedMap = seedMap;
     }
 
@@ -44,6 +47,10 @@ public class AgradditionsMoaUtil {
             return ((BlockTier6Crop) cropBlock).getRoot();
         }
         return null;
+    }
+
+    public int getRootBlockMeta(Item seed) {
+        return this.seedMap.get(seed) == null ? -1 : this.seedMap.get(seed);
     }
 
     public int getCropCount(Item seed) {

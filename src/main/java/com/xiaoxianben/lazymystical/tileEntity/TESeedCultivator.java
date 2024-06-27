@@ -1,21 +1,23 @@
 package com.xiaoxianben.lazymystical.tileEntity;
 
-import com.xiaoxianben.lazymystical.Main;
 import com.xiaoxianben.lazymystical.api.IUpdateNBT;
 import com.xiaoxianben.lazymystical.block.BlockAccelerator;
-import com.xiaoxianben.lazymystical.event.ConfigLoader;
-import com.xiaoxianben.lazymystical.event.PacketConsciousness;
+import com.xiaoxianben.lazymystical.config.ConfigValue;
 import com.xiaoxianben.lazymystical.tileEntity.ItemHandler.InputItemHandler;
 import com.xiaoxianben.lazymystical.tileEntity.ItemHandler.OutputItemHandler;
 import com.xiaoxianben.lazymystical.tileEntity.ItemHandler.SeedItemHandler;
 import com.xiaoxianben.lazymystical.util.seed.SeedUtil;
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -24,7 +26,6 @@ import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Random;
 
 public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNBT {
 
@@ -56,7 +57,6 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
     public TESeedCultivator(int level) {
         this.level = level;
 
-        seedSlot = new SeedItemHandler(1 + level / 6, this);
         blockSlot = new InputItemHandler(this.level) {
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
@@ -79,6 +79,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
                 return canInsertItem;
             }
         };
+        seedSlot = new SeedItemHandler(1 + level / 6, this);
         outputSlot = new OutputItemHandler(2, this);
     }
 
@@ -120,13 +121,13 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
                     itemEssenceStack.setCount(Math.min(itemSeedCount, (itemSeed.getItemStackLimit() / SeedUtil.getCropCount(itemSeed))) * SeedUtil.getCropCount(itemSeed));
 
                     this.outputSlot.insertItemPrivate(0, itemEssenceStack, false);
-                    if (ConfigLoader.seedProbability >= 1) {
-                        this.outputSlot.insertItemPrivate(1, new ItemStack(itemSeed, ((new Random()).nextInt(ConfigLoader.seedProbability) == 0) ? 1 : 0), false);
+                    if (ConfigValue.seedProbability >= 1) {
+                        this.outputSlot.insertItemPrivate(1, new ItemStack(itemSeed, (this.world.rand.nextInt(ConfigValue.seedProbability) == 0) ? 1 : 0), false);
                     }
                 }
             case -1:
                 // 判断是否初次运行
-                this.timeRun = (int) this.getMaxTimeRun();
+                this.timeRun = this.getMaxTimeRun();
                 this.maxTimeRun = this.timeRun;
         }
 
@@ -138,8 +139,8 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
      * 更新还在运行中的自身，重新改变运行状态。
      */
     public void updateThis() {
-        if (this.maxTimeRun != ((int) this.getMaxTimeRun())) {
-            this.maxTimeRun = (int) this.getMaxTimeRun();
+        if (this.maxTimeRun != this.getMaxTimeRun()) {
+            this.maxTimeRun = this.getMaxTimeRun();
             this.timeRun = this.maxTimeRun;
         }
     }
@@ -153,7 +154,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         }
         ItemStack seed = this.seedSlot.getStackInSlot(0);
         if (this.seedSlot.getSlots() == 2 &&
-                SeedUtil.getSeedToMeta().containsKey(seed.getItem()) &&
+                SeedUtil.isTier6Seed(seed.getItem()) &&
                 (this.seedSlot.getStackInSlot(1).isEmpty() ||
                         SeedUtil.getRootBlockMeta(seed.getItem()) != this.seedSlot.getStackInSlot(1).getMetadata()
                 )
@@ -163,25 +164,18 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         return this.outputSlot.insertItemPrivate(0, (ItemStack) this.getSeedAndEssence()[1], true).isEmpty();
     }
 
-    private void sendUpdatePacket() {
-        NBTTagCompound updateNBT = new NBTTagCompound();
-        updateNBT.setTag("TileNBT", this.writeToNBT(new NBTTagCompound()));
-        updateNBT.setTag("updateNBT", this.getUpdateNBT());
-        Main.getNetwork().sendToAll(new PacketConsciousness(updateNBT));
-    }
-
-    public float getMaxTimeRun() {
+    public int getMaxTimeRun() {
         ItemStack itemStackSeed = this.seedSlot.getStackInSlot(0);
         int itemSeedCount = itemStackSeed.getCount();
         int maxSeedCount = itemStackSeed.getMaxStackSize();
 
-        int seedTier = SeedUtil.getCropTier(itemStackSeed.getItem());
+        int seedTier = SeedUtil.getSeedTier(itemStackSeed.getItem());
         int cropCount = SeedUtil.getCropCount(itemStackSeed.getItem());
-        maxSeedCount = Math.min(maxSeedCount / cropCount, (maxSeedCount - this.outputSlot.getStackInSlot(0).getCount()) / cropCount);
+        maxSeedCount = Math.min(maxSeedCount / cropCount, (this.outputSlot.getStackInSlot(0).getMaxStackSize() - this.outputSlot.getStackInSlot(0).getCount()) / cropCount);
 
         int effectiveSeedCount = Math.min(itemSeedCount, maxSeedCount);
 
-        return ConfigLoader.seedSpeed * 20.0f * ConfigLoader.seedLevelMultiplier[seedTier - 1] * (1 + (effectiveSeedCount - 1) * ConfigLoader.seedNumberMultiplier);
+        return (int) (ConfigValue.seedSpeed * 20.0f * ConfigValue.seedLevelMultiplier[seedTier - 1] * (1 + (effectiveSeedCount - 1) * ConfigValue.seedNumberMultiplier));
     }
 
     public IItemHandler getItemHandler(int slot) {
@@ -205,9 +199,9 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
             int blockLevel = 0;
 
             if (block instanceof BlockAccelerator) {
-                blockLevel = (int) (blockNum * ConfigLoader.acceleratorLevelMultiplier[((BlockAccelerator) block).getLevel() - 1]);
+                blockLevel = (int) (blockNum * ConfigValue.acceleratorLevelMultiplier[((BlockAccelerator) block).getLevel() - 1]);
             } else if (block instanceof com.blakebr0.mysticalagriculture.blocks.BlockAccelerator) {
-                blockLevel = (int) (blockNum * ConfigLoader.acceleratorLevelMultiplier[0]);
+                blockLevel = (int) (blockNum * ConfigValue.acceleratorLevelMultiplier[0]);
             }
 
             allBlockLevel += blockLevel;
@@ -235,6 +229,21 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         return items;
     }
 
+    private void sendUpdatePacket() {
+        SPacketUpdateTileEntity packet = this.getUpdatePacket();
+        // 获取当前正在“追踪”目标 TileEntity 所在区块的玩家。
+        // 之所以这么做，是因为在逻辑服务器上，不是所有的玩家都需要获得某个 TileEntity 更新的信息。
+        // 比方说，有一个玩家和需要同步的 TileEntity 之间差了八千方块，或者压根儿就不在同一个维度里。
+        // 这个时候就没有必要同步数据——强行同步数据实际上也没有什么用，因为大多数时候这样的操作都应会被
+        // World.isBlockLoaded（func_175667_e）的检查拦截下来，避免意外在逻辑客户端上加载多余的区块。
+        PlayerChunkMapEntry trackingEntry = ((WorldServer) this.world).getPlayerChunkMap().getEntry(this.pos.getX() >> 4, this.pos.getZ() >> 4);
+        if (trackingEntry != null) {
+            for (EntityPlayerMP player : trackingEntry.getWatchingPlayers()) {
+                player.connection.sendPacket(packet);
+            }
+        }
+    }
+
 
     @ParametersAreNonnullByDefault
     @Nullable
@@ -252,6 +261,23 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         return this.getCapability(capability, facing) != null;
     }
 
+
+    @Override
+    @Nonnull
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        NBTTagCompound updateNBT = new NBTTagCompound();
+
+        updateNBT.setTag("updateNBT", this.getUpdateNBT());
+        updateNBT.setTag("NBT", this.writeToNBT(new NBTTagCompound()));
+        // 发送更新标签
+        return new SPacketUpdateTileEntity(this.getPos(), 1, updateNBT);
+    }
+
+    @Override
+    public void onDataPacket(@Nonnull net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
+        this.readFromNBT(pkt.getNbtCompound().getCompoundTag("NBT"));
+        this.updateNBT(pkt.getNbtCompound().getCompoundTag("updateNBT"));
+    }
 
     // NBT
     @ParametersAreNonnullByDefault

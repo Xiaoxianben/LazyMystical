@@ -1,6 +1,6 @@
 package com.xiaoxianben.lazymystical.jei.RecipeCategory;
 
-import com.xiaoxianben.lazymystical.event.ConfigLoader;
+import com.xiaoxianben.lazymystical.config.ConfigValue;
 import com.xiaoxianben.lazymystical.jei.RecipeWrapper.SeedCultivatorWrapper;
 import com.xiaoxianben.lazymystical.util.ModInformation;
 import com.xiaoxianben.lazymystical.util.seed.SeedUtil;
@@ -29,13 +29,13 @@ public class SeedCultivatorCategory implements IRecipeCategory<SeedCultivatorWra
 
     public SeedCultivatorCategory(IGuiHelper guiHelper) {
         int x = 0;
-        if (SeedUtil.agradditionsMoaUtil != null) x = 14;
+        if (SeedUtil.agradditionsModUtil != null) x = 14;
         this.background = guiHelper.createDrawable(new ResourceLocation(ModInformation.MOD_ID, "textures/gui/1.png"), 38, 28, 100, 26 + x);
 
         this.icon = guiHelper.drawableBuilder(new ResourceLocation(ModInformation.MOD_ID, "textures/blocks/machine/1.png"), 0, 0, 16, 16).setTextureSize(16, 16).build();
         this.animation = guiHelper.createAnimatedDrawable(
                 guiHelper.createDrawable(new ResourceLocation(ModInformation.MOD_ID, "textures/gui/1.png"), 176, 0, 22, 16),
-                20 * ConfigLoader.seedSpeed,
+                20 * ConfigValue.seedSpeed,
                 IDrawableAnimated.StartDirection.LEFT, false
         );
     }
@@ -87,8 +87,8 @@ public class SeedCultivatorCategory implements IRecipeCategory<SeedCultivatorWra
         stacks.init(2, false, 82, 4);
 
         if (ingredients.getOutputs(VanillaTypes.ITEM).size() > 2) {
-            stacks.init(3, false, 0, 22);
-            stacks.set(3, ingredients.getOutputs(VanillaTypes.ITEM).get(2));
+            stacks.init(3, true, 0, 22);
+            stacks.set(3, ingredients.getInputs(VanillaTypes.ITEM).get(1));
         }
 
         stacks.set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));

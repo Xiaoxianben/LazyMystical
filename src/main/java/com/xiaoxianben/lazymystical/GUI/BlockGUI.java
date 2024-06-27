@@ -49,7 +49,7 @@ public class BlockGUI extends GuiContainer {
             this.drawTexturedModalRect(this.guiLeft + 38, this.guiTop + 32 + 18, 7, 83, 18, 18);
         }
         if (this.tileEntity.timeRun > -1) {
-            float i1 = (tileEntity.getMaxTimeRun() - tileEntity.timeRun) / tileEntity.getMaxTimeRun();
+            float i1 = ((float) (tileEntity.getMaxTimeRun() - tileEntity.timeRun)) / tileEntity.getMaxTimeRun();
             int weight = (int) (i1 * 22);
             this.drawTexturedModalRect(this.guiLeft + 63, this.guiTop + 33, 176, 0, Math.max(weight, 1), 16);
         }
