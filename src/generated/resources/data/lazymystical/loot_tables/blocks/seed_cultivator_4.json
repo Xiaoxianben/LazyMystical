@@ -1,0 +1,14 @@
+{
+  "pools": [
+    {
+      "name": "lazymystical:seed_cultivator_4",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lazymystical:seed_cultivator_4"
+        }
+      ]
+    }
+  ]
+}

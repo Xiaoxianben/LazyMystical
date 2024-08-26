@@ -1,0 +1,23 @@
+{
+    "itemGroup.lazymystical": "神秘农业: 懒人",
+    "block.lazymystical.accelerator1": "生长加速器 1 级",
+    "block.lazymystical.accelerator2": "生长加速器 2 级",
+    "block.lazymystical.accelerator3": "生长加速器 3 级",
+    "block.lazymystical.accelerator4": "生长加速器 4 级",
+    "block.lazymystical.accelerator5": "生长加速器 5 级",
+    "block.lazymystical.accelerator6": "生长加速器 6 级",
+    "block.lazymystical.seed_cultivator_1": "下级培养器",
+    "block.lazymystical.seed_cultivator_2": "初级培养器",
+    "block.lazymystical.seed_cultivator_3": "中级培养器",
+    "block.lazymystical.seed_cultivator_4": "高级培养器",
+    "block.lazymystical.seed_cultivator_5": "终极培养器",
+    "block.lazymystical.seed_cultivator_6": "究极培养器",
+    "gui.lazymystical.seed_cultivator": "培养器",
+    "category.cultivator.comment": "培养器配置: 对培养器的配置。\n种子最终速度 = 一颗种子生长所需的时间 * 20 * 该等级的种子的生长时间提升倍率 * 有效的种子倍率。",
+    "config.seedProbability.comment": "培养器配置: 一次生产后，产生种子的概率，要大于等于1。种子概率 = 1 / 产生种子的概率。为0时，不会产生种子。",
+    "config.seedSpeed.comment": "培养器配置: 一颗种子生长所需的时间，单位为秒。",
+    "config.seedNumberMultiplier.comment": "培养器配置: 种子数量的增加倍率，有效的种子倍率 = 1 + (有效种子数量 - 1) * 种子数量的增加倍率。",
+    "config.seedLevelMultiplier.comment": "培养器配置: 不同等级的种子的生长时间提升倍率，以1级种子的生长时间为参考。",
+    "config.acceleratorLevelMultiplier.comment": "培养器配置: 不同等级的生长加速器的提升倍率，以1级生长加速器为参考。\n每tick减少的生长时间=培养器的等级 * 总生长加速器倍率。\n总生长加速器倍率 = 不同等级的生长加速器倍率 相加。\n生长加速器倍率 = 同等级的生长加速器的数量 * 该等级的生长加速器的提升倍率。",
+    "category.seed_cultivator.title": "种子培养器"
+}

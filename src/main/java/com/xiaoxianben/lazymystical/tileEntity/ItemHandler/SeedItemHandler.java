@@ -1,28 +1,28 @@
 package com.xiaoxianben.lazymystical.tileEntity.ItemHandler;
 
-import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
-import com.xiaoxianben.lazymystical.util.seed.SeedUtil;
+
+import com.xiaoxianben.lazymystical.manager.SeedManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
 public class SeedItemHandler extends InputItemHandler {
 
-    public TESeedCultivator te;
 
-
-    public SeedItemHandler(int slotMax, TESeedCultivator te) {
-        super(slotMax);
-        this.te = te;
+    public SeedItemHandler(int slotMax, Runnable run) {
+        super(slotMax, run);
     }
 
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        if (slot == 0 && SeedUtil.getSeeds().contains(stack.getItem())) {
-            return true;
+        if (slot < this.getSlots()) {
+            return SeedManager.isTrueSeed(Minecraft.getInstance().level, new Inventory(stack), 0);
         }
-        return slot == 1 && SeedUtil.isRootBlock(stack);
+//        return slot == 1 && SeedUtil.isRootBlock(stack);
+        return false;
     }
 
     /**
@@ -32,13 +32,7 @@ public class SeedItemHandler extends InputItemHandler {
      * @return The maximum stack size allowed in the slot.
      */
     public int getSlotLimit(int slot) {
-        return slot == 0 ? 64 : 1;
-    }
-
-    protected void onContentsChanged(int slot) {
-        if (te != null && slot == 0) {
-            this.te.updateThis();
-        }
+        return slot < this.getSlots() ? 64 : 1;
     }
 
 }

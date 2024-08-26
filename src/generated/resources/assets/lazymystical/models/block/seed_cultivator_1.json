@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "side": "lazymystical:blocks/seed_cultivator/1_side",
+    "front": "lazymystical:blocks/seed_cultivator/1",
+    "top": "lazymystical:blocks/seed_cultivator/1_side"
+  }
+}

@@ -1,27 +1,15 @@
 package com.xiaoxianben.lazymystical.tileEntity.ItemHandler;
 
-import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
-public class OutputItemHandler extends ItemStackHandler {
-
-    public TESeedCultivator te;
+public class OutputItemHandler extends BaseItemHandler {
 
 
-    public OutputItemHandler(int slotMax, TESeedCultivator te) {
-        super(slotMax);
-        this.te = te;
-    }
-
-
-    @Override
-    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return false;
+    public OutputItemHandler(int slotMax, Runnable run) {
+        super(slotMax, run);
     }
 
     @Override
@@ -30,28 +18,51 @@ public class OutputItemHandler extends ItemStackHandler {
         return stack;
     }
 
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        return false;
+    }
+
     /**
-     * <p>
-     * Inserts an ItemStack into the given slot and return the remainder.
-     * The ItemStack <em>should not</em> be modified in this function!
-     * </p>
-     * Note: This behaviour is subtly different from {@link IFluidHandler#fill(FluidStack, boolean)}
-     *
      * @param slot     Slot to insert into.
      * @param stack    ItemStack to insert. This must not be modified by the item handler.
      * @param simulate If true, the insertion is only simulated
      * @return The remaining ItemStack that was not inserted (if the entire stack is accepted, then return an empty ItemStack).
-     * May be the same as the input ItemStack if unchanged, otherwise a new ItemStack.
+     * Maybe the same as the input ItemStack if unchanged, otherwise a new ItemStack.
      * The returned ItemStack can be safely modified after.
      **/
     @Nonnull
     public ItemStack insertItemPrivate(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        return super.insertItem(slot, stack, simulate);
-    }
+        if (stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        } else {
+            this.validateSlotIndex(slot);
+            ItemStack existing = this.stacks.get(slot);
+            int limit = this.getStackLimit(slot, stack);
+            if (!existing.isEmpty()) {
+                if (!ItemHandlerHelper.canItemStacksStack(stack, existing)) {
+                    return stack;
+                }
 
-    protected void onContentsChanged(int slot) {
-        if (te != null && slot == 0) {
-            this.te.updateThis();
+                limit -= existing.getCount();
+            }
+
+            if (limit <= 0) {
+                return stack;
+            } else {
+                boolean reachedLimit = stack.getCount() > limit;
+                if (!simulate) {
+                    if (existing.isEmpty()) {
+                        this.stacks.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
+                    } else {
+                        existing.grow(reachedLimit ? limit : stack.getCount());
+                    }
+
+                    this.onContentsChanged(slot);
+                }
+
+                return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStack.EMPTY;
+            }
         }
     }
 

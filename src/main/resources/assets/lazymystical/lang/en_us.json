@@ -1,0 +1,23 @@
+{
+    "itemGroup.lazymystical": "Lazy Mystical",
+    "block.lazymystical.accelerator1": "accelerator level 1",
+    "block.lazymystical.accelerator2": "accelerator level 2",
+    "block.lazymystical.accelerator3": "accelerator level 3",
+    "block.lazymystical.accelerator4": " accelerator level 4",
+    "block.lazymystical.accelerator5": "accelerator level 5",
+    "block.lazymystical.accelerator6": "accelerator level 6",
+    "block.lazymystical.seed_cultivator_1": "inferium seed cultivator",
+    "block.lazymystical.seed_cultivator_2": "prudentium seed cultivator",
+    "block.lazymystical.seed_cultivator_3": "tertium seed cultivator",
+    "block.lazymystical.seed_cultivator_4": "imperium seed cultivator",
+    "block.lazymystical.seed_cultivator_5": "supremium seed cultivator",
+    "block.lazymystical.seed_cultivator_6": "insanium seed cultivator",
+    "gui.lazymystical.seed_cultivator": "seed cultivator",
+    "category.cultivator.comment": "config of cultivator: The configuration of the incubator. \nSeed final speed :  time it takes for a seed to grow * 20 * growth time multiplier for seeds of that level * number of seeds valid.",
+    "config.seedProbability.comment": "config of cultivator: After a production, the probability of producing seeds should be greater than or equal to 1. Seed Probability :  1 / Probability of Seed Generation. When it is 0, no seeds will be generated.",
+    "config.seedSpeed.comment": "config of cultivator: The time it takes for one seed to grow, in seconds.",
+    "config.seedNumberMultiplier.comment": "config of cultivator: Multiplier of the number of seeds, effective seed multiplier :  1 + (number of effective seeds - 1) * increase in the number of seeds.",
+    "config.seedLevelMultiplier.comment": "config of cultivator: The growth time of different grades of seeds is increased, and the growth time of grade 1 seeds is used as a reference.",
+    "config.acceleratorLevelMultiplier.comment": "config of cultivator: The increase rate of different levels of growth accelerators, based on the level 1 growth accelerator. \nReduced growth time per tick :  incubator grade * total growth accelerator magnification. \nTotal Growth Accelerator Magnification :  Sum of the growth accelerator magnifications of different levels. \nGrowth Accelerator Multiplier :  Number of Growth Accelerators of the same level * Increase of the Growth Accelerator of that level.",
+    "category.seed_cultivator.title": "Seed Cultivator"
+}
