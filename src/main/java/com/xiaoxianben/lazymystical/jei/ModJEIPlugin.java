@@ -1,12 +1,13 @@
 package com.xiaoxianben.lazymystical.jei;
 
 
-import com.xiaoxianben.lazymystical.GUI.BlockGUI;
-import com.xiaoxianben.lazymystical.init.ModBlocks;
-import com.xiaoxianben.lazymystical.jei.AdvancedGuiHandler.SeedCultivatorAdvancedGuiHandler;
-import com.xiaoxianben.lazymystical.jei.RecipeCategory.SeedCultivatorCategory;
-import com.xiaoxianben.lazymystical.jei.RecipeWrapper.SeedCultivatorWrapper;
-import com.xiaoxianben.lazymystical.util.seed.SeedUtil;
+import com.xiaoxianben.lazymystical.LazyMystical;
+import com.xiaoxianben.lazymystical.gui.BlockGUI;
+import com.xiaoxianben.lazymystical.init.EnumBlockLevel;
+import com.xiaoxianben.lazymystical.jei.advancedGuiHandler.SeedCultivatorAdvancedGuiHandler;
+import com.xiaoxianben.lazymystical.jei.recipeCategory.SeedCultivatorCategory;
+import com.xiaoxianben.lazymystical.jei.recipeWrapper.SeedCultivatorWrapper;
+import com.xiaoxianben.lazymystical.manager.SeedManager;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -20,6 +21,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @JEIPlugin
@@ -37,7 +39,7 @@ public class ModJEIPlugin implements IModPlugin {
     @ParametersAreNonnullByDefault
     @Override
     public void register(IModRegistry registry) {
-        for (Block seedCultivator : ModBlocks.allSeedCultivators) {
+        for (Block seedCultivator : LazyMystical.BLOCKS.subList(0, EnumBlockLevel.enableNumber())) {
             if (Objects.nonNull(seedCultivator)) {
                 registry.addRecipeCatalyst(Item.getItemFromBlock(seedCultivator).getDefaultInstance(), SeedCultivatorCategory.ID);
             }
@@ -54,20 +56,16 @@ public class ModJEIPlugin implements IModPlugin {
     private List<SeedCultivatorWrapper> SeedCultivatorRecipes() {
         List<SeedCultivatorWrapper> recipes = new ArrayList<>();
 
-        Item[] inputs = SeedUtil.getSeedToCropMap().keySet().toArray(new Item[0]);
-        // steam
-        for (int i = 0; i < inputs.length; i++) {
+        for (Map.Entry<Item, List<ItemStack>> entry : SeedManager.getSeedToCropMap().entrySet()) {
             ArrayList<ItemStack> Outputs = new ArrayList<>();
             ArrayList<ItemStack> input = new ArrayList<>();
 
-            Item inputItem = inputs[i];
+            input.add(entry.getKey().getDefaultInstance());
+            Outputs.add(entry.getValue().get(0));
+            Outputs.add(entry.getKey().getDefaultInstance());
 
-            input.add(inputItem.getDefaultInstance());
-            Outputs.add(Objects.requireNonNull(SeedUtil.getCrop(inputItem)).copy());
-            Outputs.add(inputItem.getDefaultInstance());
-
-            if (SeedUtil.getRootBlockMeta(inputItem) != -1)
-                input.add(new ItemStack(SeedUtil.agradditionsModUtil.getRootBlockState(inputItem).getBlock(), 1, SeedUtil.getRootBlockMeta(inputItem)));
+            if (SeedManager.getRootBlock(entry.getKey()) != null)
+                input.add(new ItemStack(SeedManager.getRootBlock(entry.getKey()), 1, SeedManager.getRootBlockMeta(entry.getKey())));
             recipes.add(new SeedCultivatorWrapper(input.toArray(new ItemStack[0]), Outputs.toArray(new ItemStack[0])));
         }
 

@@ -1,6 +1,5 @@
 package com.xiaoxianben.lazymystical.block;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -19,7 +18,6 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.LinkedHashSet;
 
 public class BlockTEBasic extends BlockBasic implements ITileEntityProvider {
 
@@ -27,8 +25,8 @@ public class BlockTEBasic extends BlockBasic implements ITileEntityProvider {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
 
-    protected BlockTEBasic(String name, Material materialIn, SoundType soundType, CreativeTabs tab, LinkedHashSet<Block> linkedHashSet) {
-        super(name, materialIn, soundType, tab, linkedHashSet);
+    protected BlockTEBasic(String name, Material materialIn, SoundType soundType, CreativeTabs tab) {
+        super(name, materialIn, soundType, tab);
 
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 

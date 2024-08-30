@@ -1,7 +1,7 @@
 plans:
 buff:
 [shield A]: absorbs damage. for each damage absorbed, -1s.
-[shield B]: (Darker Protection) absorbs damage, revenges attacker, try create explosion
+[shield B]: (Darker Protection) absorbs damage, revenges attacker, try to create explosion
 [Explosion Proof]
 [Arrow Proof]* only arrows, or other bullets
 [melee proof]

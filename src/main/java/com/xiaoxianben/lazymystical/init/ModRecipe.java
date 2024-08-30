@@ -8,22 +8,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModRecipe implements IModInit {
-    public static void acceleratorRecipe(Block outBlock, String block, String inputBlock) {
-        Object[] params = {
-                "SIS",
-                "IXI",
-                "SIS",
-                'S', "stone",
-                'I', block,
-                'X', inputBlock
-        };
-        GameRegistry.addShapedRecipe(outBlock.getRegistryName(),
-                new ResourceLocation(ModInformation.MOD_ID, "accelerator"),
-                Item.getItemFromBlock(outBlock).getDefaultInstance(),
-                params);
-    }
 
-    public static void acceleratorRecipe(Block outBlock, String block, Block inputBlock) {
+    public static void acceleratorRecipe(Block outBlock, String block, Object inputBlock) {
         Object[] params = {
                 "SIS",
                 "IXI",
@@ -33,7 +19,7 @@ public class ModRecipe implements IModInit {
                 'X', inputBlock
         };
         GameRegistry.addShapedRecipe(
-                new ResourceLocation(ModInformation.MOD_ID, outBlock.getRegistryName() + "_1"),
+                outBlock.getRegistryName(),
                 new ResourceLocation(ModInformation.MOD_ID, "accelerator"),
                 Item.getItemFromBlock(outBlock).getDefaultInstance(),
                 params);

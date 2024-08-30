@@ -1,4 +1,4 @@
-package com.xiaoxianben.lazymystical.GUI;
+package com.xiaoxianben.lazymystical.gui;
 
 import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
 import com.xiaoxianben.lazymystical.util.ModInformation;
@@ -45,7 +45,7 @@ public class BlockGUI extends GuiContainer {
         for (Rectangle guiExtraArea : this.getGuiExtraAreas()) {
             this.drawTexturedModalRect(guiExtraArea.x, guiExtraArea.y, 7, 83, guiExtraArea.width, guiExtraArea.height);
         }
-        if (this.tileEntity.level == 6) {
+        if (this.tileEntity.blockLevel == 6) {
             this.drawTexturedModalRect(this.guiLeft + 38, this.guiTop + 32 + 18, 7, 83, 18, 18);
         }
         if (this.tileEntity.timeRun > -1) {

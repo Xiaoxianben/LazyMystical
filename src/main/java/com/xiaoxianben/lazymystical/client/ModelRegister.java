@@ -1,6 +1,6 @@
 package com.xiaoxianben.lazymystical.client;
 
-import com.xiaoxianben.lazymystical.Main;
+import com.xiaoxianben.lazymystical.LazyMystical;
 import com.xiaoxianben.lazymystical.api.IHasModel;
 import com.xiaoxianben.lazymystical.util.ModInformation;
 import net.minecraft.block.Block;
@@ -21,13 +21,13 @@ public class ModelRegister {
     @SubscribeEvent
     public static void onModelRegister(ModelRegistryEvent event) {
 
-        for (Item item : Main.ITEMS) {
+        for (Item item : LazyMystical.ITEMS) {
             if (item instanceof IHasModel) {
                 ((IHasModel) item).registerModels();
             }
         }
 
-        for (Block block : Main.BLOCKS) {
+        for (Block block : LazyMystical.BLOCKS) {
             if (block instanceof IHasModel) {
                 ((IHasModel) block).registerModels();
             }

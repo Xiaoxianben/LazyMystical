@@ -1,6 +1,6 @@
 package com.xiaoxianben.lazymystical.slot;
 
-import com.xiaoxianben.lazymystical.tileEntity.ItemHandler.InputItemHandler;
+import com.xiaoxianben.lazymystical.tileEntity.itemHandler.InputItemHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
@@ -19,7 +19,7 @@ public class SlotInputItemHandler extends SlotItemHandler {
 
     @Override
     public boolean canTakeStack(EntityPlayer playerIn) {
-        return true;
+        return !((InputItemHandler) this.getItemHandler()).extractItemPrivate(this.index, 1, true).isEmpty();
     }
 
     @Override

@@ -1,6 +1,6 @@
-package com.xiaoxianben.lazymystical.jei.AdvancedGuiHandler;
+package com.xiaoxianben.lazymystical.jei.advancedGuiHandler;
 
-import com.xiaoxianben.lazymystical.GUI.BlockGUI;
+import com.xiaoxianben.lazymystical.gui.BlockGUI;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
 
 import javax.annotation.Nonnull;

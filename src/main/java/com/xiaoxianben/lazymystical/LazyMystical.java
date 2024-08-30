@@ -1,15 +1,16 @@
 package com.xiaoxianben.lazymystical;
 
-import com.xiaoxianben.lazymystical.GUI.GUIHandler;
 import com.xiaoxianben.lazymystical.api.IModInit;
 import com.xiaoxianben.lazymystical.config.ConfigLoader;
+import com.xiaoxianben.lazymystical.gui.GUIHandler;
+import com.xiaoxianben.lazymystical.init.EnumBlockLevel;
 import com.xiaoxianben.lazymystical.init.ModBlocks;
 import com.xiaoxianben.lazymystical.init.ModRecipe;
-import com.xiaoxianben.lazymystical.otherModInit.OtherInit;
+import com.xiaoxianben.lazymystical.jsonRecipe.ModJsonRecipe;
+import com.xiaoxianben.lazymystical.manager.SeedManager;
 import com.xiaoxianben.lazymystical.proxy.CommonProxy;
 import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
 import com.xiaoxianben.lazymystical.util.ModInformation;
-import com.xiaoxianben.lazymystical.util.seed.SeedUtil;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -24,8 +25,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(
         modid = ModInformation.MOD_ID,
@@ -33,19 +34,16 @@ import java.util.LinkedHashSet;
         version = ModInformation.VERSION,
         dependencies = "required-after:mysticalagriculture;after:mysticalagradditions;after:jei"
 )
-public class Main {
+public class LazyMystical {
 
 
-    @Nullable
-    public static LinkedHashSet<Item> ITEMS = new LinkedHashSet<>();
-    @Nullable
-    public static LinkedHashSet<Block> BLOCKS = new LinkedHashSet<>();
-    @Nullable
-    public static LinkedHashSet<IModInit> modInit = new LinkedHashSet<>();
+    public static List<Item> ITEMS = new ArrayList<>();
+    public static List<Block> BLOCKS = new ArrayList<>();
+    public List<IModInit> modInit = new ArrayList<>();
 
 
     @Mod.Instance
-    public static Main instance;
+    public static LazyMystical instance;
     @SidedProxy(clientSide = ModInformation.CLIENT_PROXY_CLASS, serverSide = ModInformation.COMMON_PROXY_CLASS)
     public static CommonProxy proxy;
 
@@ -54,22 +52,25 @@ public class Main {
         @Nonnull
         @Override
         public ItemStack getTabIconItem() {
-            return Item.getItemFromBlock(ModBlocks.seedCultivators[0]).getDefaultInstance();
+            return Item.getItemFromBlock(BLOCKS.get(EnumBlockLevel.enableNumber())).getDefaultInstance();
         }
     };
 //    private static SimpleNetworkWrapper network;
 
 
-    public Main() {
+    public LazyMystical() {
         modInit.add(new ModBlocks());
         modInit.add(new ModRecipe());
-        modInit.add(new OtherInit());
     }
 
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         ConfigLoader.preInitConfigLoader(event);
+
+        for (EnumBlockLevel value : EnumBlockLevel.values()) {
+            value.setEnable();
+        }
 
         modInit.forEach(IModInit::preInit);
     }
@@ -82,8 +83,8 @@ public class Main {
         modInit.forEach(IModInit::init);
 
         // 注册物品
-        NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new GUIHandler());
-        GameRegistry.registerTileEntity(TESeedCultivator.class, new ResourceLocation(ModInformation.MOD_ID, "block_mystical_tank"));
+        NetworkRegistry.INSTANCE.registerGuiHandler(LazyMystical.instance, new GUIHandler());
+        GameRegistry.registerTileEntity(TESeedCultivator.class, new ResourceLocation(ModInformation.MOD_ID, "te_seed_cultivator"));
     }
 
     @Mod.EventHandler
@@ -91,10 +92,10 @@ public class Main {
 
         modInit.forEach(IModInit::postInit);
 
-        ITEMS = null;
-        BLOCKS = null;
         modInit = null;
-        SeedUtil.init();
+        SeedManager seedManager = new SeedManager();
+        new ModJsonRecipe(seedManager::addRecipe);
+        seedManager.init();
     }
 
 //    public static SimpleNetworkWrapper getNetwork() {

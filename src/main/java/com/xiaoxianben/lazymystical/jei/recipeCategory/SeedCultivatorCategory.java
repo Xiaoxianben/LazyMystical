@@ -1,9 +1,8 @@
-package com.xiaoxianben.lazymystical.jei.RecipeCategory;
+package com.xiaoxianben.lazymystical.jei.recipeCategory;
 
 import com.xiaoxianben.lazymystical.config.ConfigValue;
-import com.xiaoxianben.lazymystical.jei.RecipeWrapper.SeedCultivatorWrapper;
+import com.xiaoxianben.lazymystical.jei.recipeWrapper.SeedCultivatorWrapper;
 import com.xiaoxianben.lazymystical.util.ModInformation;
-import com.xiaoxianben.lazymystical.util.seed.SeedUtil;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
@@ -15,6 +14,7 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,7 +29,7 @@ public class SeedCultivatorCategory implements IRecipeCategory<SeedCultivatorWra
 
     public SeedCultivatorCategory(IGuiHelper guiHelper) {
         int x = 0;
-        if (SeedUtil.agradditionsModUtil != null) x = 14;
+        if (Loader.isModLoaded("mysticalagradditions")) x = 14;
         this.background = guiHelper.createDrawable(new ResourceLocation(ModInformation.MOD_ID, "textures/gui/1.png"), 38, 28, 100, 26 + x);
 
         this.icon = guiHelper.drawableBuilder(new ResourceLocation(ModInformation.MOD_ID, "textures/blocks/machine/1.png"), 0, 0, 16, 16).setTextureSize(16, 16).build();
@@ -86,7 +86,7 @@ public class SeedCultivatorCategory implements IRecipeCategory<SeedCultivatorWra
         stacks.init(1, false, 60, 4);
         stacks.init(2, false, 82, 4);
 
-        if (ingredients.getOutputs(VanillaTypes.ITEM).size() > 2) {
+        if (ingredients.getInputs(VanillaTypes.ITEM).size() >= 2) {
             stacks.init(3, true, 0, 22);
             stacks.set(3, ingredients.getInputs(VanillaTypes.ITEM).get(1));
         }

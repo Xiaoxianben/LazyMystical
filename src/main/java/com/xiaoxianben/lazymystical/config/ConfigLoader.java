@@ -1,15 +1,18 @@
 package com.xiaoxianben.lazymystical.config;
 
+import com.xiaoxianben.lazymystical.util.ModInformation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 
 public class ConfigLoader {
 
-    public static String cultivatorCategory = "cultivator";
+    protected static String cultivatorCategory = "cultivator";
+    public static String recipeDir;
 
     private static Configuration config;
     private static Logger logger;
@@ -17,7 +20,8 @@ public class ConfigLoader {
 
     public static void preInitConfigLoader(@Nonnull FMLPreInitializationEvent event) {
         logger = event.getModLog();
-        config = new Configuration(event.getSuggestedConfigurationFile());
+        recipeDir = event.getModConfigurationDirectory() + "/" + ModInformation.MOD_ID;
+        config = new Configuration(new File(recipeDir + "/" + ModInformation.MOD_ID + ".json"));
 
         //实例化了一个Configuration类,括号中填的是Forge推荐的配置文件位置,这个位置在游戏根目录的config文件夹下，
         //名为<modid>.cfg，这里就是bm.cfg。

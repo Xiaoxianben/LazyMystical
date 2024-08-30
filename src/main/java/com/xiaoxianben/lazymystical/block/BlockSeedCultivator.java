@@ -1,8 +1,7 @@
 package com.xiaoxianben.lazymystical.block;
 
-import com.xiaoxianben.lazymystical.GUI.GUIHandler;
-import com.xiaoxianben.lazymystical.Main;
-import com.xiaoxianben.lazymystical.init.ModBlocks;
+import com.xiaoxianben.lazymystical.LazyMystical;
+import com.xiaoxianben.lazymystical.gui.GUIHandler;
 import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -29,12 +28,10 @@ import java.util.Objects;
 
 public class BlockSeedCultivator extends BlockTEBasic implements ITileEntityProvider {
 
-    public int level;
-
 
     public BlockSeedCultivator(int level) {
-        super("seed_cultivator_" + level, Material.IRON, SoundType.METAL, Main.tab, ModBlocks.allSeedCultivators);
-        this.level = level;
+        super("seed_cultivator_" + level, Material.IRON, SoundType.METAL, LazyMystical.tab);
+        this.setLevel(level);
     }
 
 
@@ -47,7 +44,7 @@ public class BlockSeedCultivator extends BlockTEBasic implements ITileEntityProv
                 playerIn.sendMessage(new TextComponentString(compound.toString()));
             }
             int id = GUIHandler.BlockGUI;
-            playerIn.openGui(Main.instance, id, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            playerIn.openGui(LazyMystical.instance, id, worldIn, pos.getX(), pos.getY(), pos.getZ());
         }
         return true;
     }
@@ -94,6 +91,6 @@ public class BlockSeedCultivator extends BlockTEBasic implements ITileEntityProv
     @Nullable
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new TESeedCultivator(this.level);
+        return new TESeedCultivator();
     }
 }

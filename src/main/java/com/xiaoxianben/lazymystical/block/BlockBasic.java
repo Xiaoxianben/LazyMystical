@@ -1,6 +1,6 @@
 package com.xiaoxianben.lazymystical.block;
 
-import com.xiaoxianben.lazymystical.Main;
+import com.xiaoxianben.lazymystical.LazyMystical;
 import com.xiaoxianben.lazymystical.api.IHasModel;
 import com.xiaoxianben.lazymystical.util.ModInformation;
 import net.minecraft.block.Block;
@@ -8,12 +8,13 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-
-import java.util.LinkedHashSet;
+import net.minecraft.item.ItemBlock;
 
 public class BlockBasic extends Block implements IHasModel {
 
-    public BlockBasic(String name, Material materialIn, SoundType soundType, CreativeTabs tab, LinkedHashSet<Block> linkedHashSet) {
+    private int level;
+
+    public BlockBasic(String name, Material materialIn, SoundType soundType, CreativeTabs tab) {
         super(materialIn);
         setUnlocalizedName(ModInformation.MOD_ID + '-' + name);
         setRegistryName(name);
@@ -24,12 +25,22 @@ public class BlockBasic extends Block implements IHasModel {
         this.setHardness(10.0F);
         this.setHarvestLevel("pickaxe", 1);
 
-        linkedHashSet.add(this);
+        LazyMystical.BLOCKS.add(this);
+        LazyMystical.ITEMS.add(new ItemBlock(this).setRegistryName(name));
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        if (level <= 0) throw new RuntimeException("level 超出范围, RegistryName: " + this.getRegistryName());
+        this.level = level;
     }
 
     @Override
     public void registerModels() {
-        Main.proxy.registerItemRenderer(Item.getItemFromBlock(this), 0, "inventory");
+        LazyMystical.proxy.registerItemRenderer(Item.getItemFromBlock(this), 0, "inventory");
     }
 
 }

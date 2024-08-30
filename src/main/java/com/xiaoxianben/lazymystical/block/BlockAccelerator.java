@@ -2,9 +2,8 @@ package com.xiaoxianben.lazymystical.block;
 
 import com.blakebr0.mysticalagriculture.config.ModConfig;
 import com.blakebr0.mysticalagriculture.lib.Tooltips;
-import com.xiaoxianben.lazymystical.Main;
+import com.xiaoxianben.lazymystical.LazyMystical;
 import com.xiaoxianben.lazymystical.config.ConfigValue;
-import com.xiaoxianben.lazymystical.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.SoundType;
@@ -25,14 +24,11 @@ import java.util.Random;
 
 public class BlockAccelerator extends BlockBasic {
 
-    private final int level;
-
 
     public BlockAccelerator(int level) {
-        super("accelerator" + level, Material.ROCK, SoundType.STONE, Main.tab, ModBlocks.allAccelerators);
+        super("accelerator" + level, Material.ROCK, SoundType.STONE, LazyMystical.tab);
         this.setTickRandomly(false);
-
-        this.level = level;
+        this.setLevel(level);
     }
 
 
@@ -61,7 +57,7 @@ public class BlockAccelerator extends BlockBasic {
     }
 
     private void growCropsNearby(World world, BlockPos pos, IBlockState state) {
-        Iterable<BlockPos> blocks = BlockPos.getAllInBox(pos.up(2), pos.up(12 * this.level + 2));
+        Iterable<BlockPos> blocks = BlockPos.getAllInBox(pos.up(2), pos.up(12 * this.getLevel() + 2));
 
         if (!blocks.iterator().hasNext() || !isEnabled()) {
             world.scheduleBlockUpdate(pos, state.getBlock(), 1, 1);
@@ -91,10 +87,6 @@ public class BlockAccelerator extends BlockBasic {
      */
     private float getRandomFloat() {
         return 0.8f + new Random().nextFloat() * 0.3f;
-    }
-
-    public int getLevel() {
-        return this.level;
     }
 
     public boolean isEnabled() {

@@ -1,4 +1,4 @@
-package com.xiaoxianben.lazymystical.GUI;
+package com.xiaoxianben.lazymystical.gui;
 
 import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
 import net.minecraft.entity.player.EntityPlayer;
@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
 public class GUIHandler implements IGuiHandler {
+
     //对每个自定义GUI进行序号编码
     public static final int BlockGUI = 1;
 

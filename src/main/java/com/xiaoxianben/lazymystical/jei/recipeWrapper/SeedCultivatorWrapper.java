@@ -1,4 +1,4 @@
-package com.xiaoxianben.lazymystical.jei.RecipeWrapper;
+package com.xiaoxianben.lazymystical.jei.recipeWrapper;
 
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
