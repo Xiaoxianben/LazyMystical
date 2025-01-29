@@ -1,15 +1,16 @@
 package com.xiaoxianben.lazymystical.init;
 
-import com.xiaoxianben.lazymystical.api.IModInit;
-import com.xiaoxianben.lazymystical.util.ModInformation;
+import com.xiaoxianben.lazymystical.LazyMystical;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class ModRecipe implements IModInit {
+public class ModRecipe {
 
-    public static void acceleratorRecipe(Block outBlock, String block, Object inputBlock) {
+    public static ModRecipe instance;
+
+    public void acceleratorRecipe(Block outBlock, String block, Object inputBlock) {
         Object[] params = {
                 "SIS",
                 "IXI",
@@ -20,12 +21,12 @@ public class ModRecipe implements IModInit {
         };
         GameRegistry.addShapedRecipe(
                 outBlock.getRegistryName(),
-                new ResourceLocation(ModInformation.MOD_ID, "accelerator"),
+                new ResourceLocation(LazyMystical.MOD_ID, "accelerator"),
                 Item.getItemFromBlock(outBlock).getDefaultInstance(),
                 params);
     }
 
-    public static void SeedCultivatorRecipe(Block outBlock, String blockOre, Block recipeBlock) {
+    public void SeedCultivatorRecipe(Block outBlock, String blockOre, Block recipeBlock) {
         Object[] params = {
                 "EBE",
                 "BXB",
@@ -36,20 +37,9 @@ public class ModRecipe implements IModInit {
         };
 
         GameRegistry.addShapedRecipe(outBlock.getRegistryName(),
-                new ResourceLocation(ModInformation.MOD_ID, "seedCultivator"),
+                new ResourceLocation(LazyMystical.MOD_ID, "seedCultivator"),
                 Item.getItemFromBlock(outBlock).getDefaultInstance(),
                 params);
-    }
-
-    public void preInit() {
-    }
-
-    public void init() {
-    }
-
-    @Override
-    public void postInit() {
-
     }
 
 }

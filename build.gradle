@@ -1,34 +1,18 @@
 buildscript {
     repositories {
-        if (use_mirror_url == "true") {
-            // clear all proxy settings, this is available for global
-            System.clearProperty "http.proxyHost"
-            System.clearProperty "http.proxyPort"
-            System.clearProperty "https.proxyHost"
-            System.clearProperty "https.proxyPort"
-            System.clearProperty "socksProxyHost"
-            System.clearProperty "socksProxyPort"
-            System.setProperty "java.net.useSystemProxies", "false"
-
-            maven { url "https://maven.aliyun.com/nexus/content/groups/public" }
-            maven { url "https://${mirror_maven_url}" }
-        } else {
-            mavenCentral()
-            maven { url "https://maven.minecraftforge.net" }
-        }
+        jcenter()
+        mavenCentral()
+        maven { url = "https://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:${forge_gradle_version}"
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 
-boolean useMirror = use_mirror_url == "true"
-if (useMirror) apply from: "mirror.gradle"
 apply plugin: "net.minecraftforge.gradle.forge"
-apply from: "runmanager.gradle"
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-version = "${modVersion}"
+version = modVersion
 group = "com.xiaoxianben.lazymystical" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "lazymystical-1.12.2"
 
@@ -116,11 +100,21 @@ processResources {
     }
 }
 
-task buildJar(type: Delete) {
-    delete "build\\combined"
-    delete "build\\retromapping"
-    delete "build\\sources"
-    delete "build\\tmp"
+//replaceString "http://resources.download.minecraft.net/", "https://download.mcbbs.net/assets/" // use MCBBS mirror due to there"s no way to hook http 302 response when downloading assets
+
+sourceSets {
+    main {
+        output.resourcesDir = file('build/combined')
+        java.outputDir = file('build/combined')
+    }
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+task buildJar {
+    dependsOn 'clean'
 
     dependsOn 'build'
     doLast {

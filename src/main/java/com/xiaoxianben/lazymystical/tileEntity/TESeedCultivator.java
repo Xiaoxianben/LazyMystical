@@ -9,6 +9,7 @@ import com.xiaoxianben.lazymystical.tileEntity.itemHandler.OutputItemHandler;
 import com.xiaoxianben.lazymystical.tileEntity.itemHandler.SeedItemHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -28,20 +29,23 @@ import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Objects;
 import java.util.Random;
 
 public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNBT {
 
-    public int timeRun = -1;
-    public int maxTimeRun = 0;
-    public int blockLevel = 0;
-
-    protected SeedItemHandler seedSlot;
-    protected InputItemHandler blockSlot;
+    protected final SeedItemHandler seedSlot;
+    protected final InputItemHandler blockSlot;
     /**
      * "输出"物品槽 0: 精华 1: 种子
      */
-    protected OutputItemHandler outputSlot;
+    protected final OutputItemHandler outputSlot;
+    public int timeRun = -1;
+    public int maxTimeRun = 0;
+    public int blockLevel = -1;
+    public Item recipeInput = null;
+    public ItemStack recipeOutput = null;
+    public ItemStack recipeOutputOther = null;
 
 
     public TESeedCultivator() {
@@ -83,19 +87,16 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         switch (this.timeRun) {
             case 0:
                 // 判断是否运行完成
-                ItemStack[] items = this.getSeedAndEssence();
-                if (items != null) {
-                    Item itemSeed = items[0].getItem();
-                    ItemStack itemEssenceStack = items[1].copy();
+                if (recipeInput != null) {
+                    ItemStack itemEssenceStack = recipeOutput.copy();
 
-                    int resultItemCount = SeedManager.getResultItemCount(itemSeed);
+                    int resultItemCount = recipeOutput.getCount();
                     itemEssenceStack.setCount(Math.min(this.seedSlot.getStackInSlot(0).getCount(), this.getMaxEffectiveSeedCount()) * resultItemCount);
                     this.outputSlot.insertItemPrivate(0, itemEssenceStack, false);
 
-                    ItemStack otherRuItem = items[2];
                     for (int i = 0; i < (itemEssenceStack.getCount() / resultItemCount); i++) {
                         if ((new Random().nextInt(ConfigValue.seedProbability) == 0)) {
-                            this.outputSlot.insertItemPrivate(1, otherRuItem.copy(), false);
+                            this.outputSlot.insertItemPrivate(1, recipeOutputOther.copy(), false);
                         }
                     }
                 }
@@ -105,11 +106,24 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         }
     }
 
+    /**
+     * 更新方块等级和物品处理器
+     */
     protected void init() {
         if (this.blockLevel <= 0) {
             this.blockLevel = ((BlockSeedCultivator) this.getBlockType()).getLevel();
             initItemHandler(this.blockLevel, this.blockSlot);
             initItemHandler(this.blockLevel > 5 ? 2 : 1, this.seedSlot);
+        }
+        ItemStack[] seedAndEssence = getSeedAndEssence();
+        if (seedAndEssence != null) {
+            this.recipeInput = seedAndEssence[0].getItem();
+            this.recipeOutput = seedAndEssence[1];
+            this.recipeOutputOther = seedAndEssence[2];
+        } else {
+            this.recipeInput = null;
+            this.recipeOutput = null;
+            this.recipeOutputOther = null;
         }
     }
 
@@ -130,6 +144,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
      * 更新还在运行中的自身，重新改变运行状态。
      */
     public void updateThis() {
+        this.init();
         if (this.maxTimeRun > 0 && this.maxTimeRun != this.getMaxTimeRun()) {
             updateThisTime();
         }
@@ -148,42 +163,45 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
 
 
     public boolean canRun() {
-        ItemStack[] itemStacks = this.getSeedAndEssence();
-        if (itemStacks == null) {
+        ItemStack item = this.seedSlot.getStackInSlot(0);
+        if (this.recipeInput == null || item.isEmpty()) {
             return false;
         }
-        if (!this.outputSlot.insertItemPrivate(0, itemStacks[1], true).isEmpty()) {
+        if (!this.outputSlot.insertItemPrivate(0, this.recipeOutput, true).isEmpty()) {
             return false;
         }
-        ItemStack seed = this.seedSlot.getStackInSlot(0);
-        if (this.seedSlot.getSlots() == 2 && SeedManager.isTier6Seed(seed.getItem())) {
-            return !(this.seedSlot.getStackInSlot(1).isEmpty() ||
-                    SeedManager.getRootBlockMeta(seed.getItem()) != this.seedSlot.getStackInSlot(1).getMetadata());
+        if (SeedManager.isTier6Seed(recipeInput)) {
+            if (this.seedSlot.getSlots() == 2) {
+                return !(this.seedSlot.getStackInSlot(1).isEmpty() ||
+                        SeedManager.getRootBlockMeta(recipeInput) != this.seedSlot.getStackInSlot(1).getMetadata());
+            }
+            return false;
         }
         return true;
     }
 
     public int getMaxTimeRun() {
-        ItemStack itemStackSeed = this.seedSlot.getStackInSlot(0);
-        if (itemStackSeed.isEmpty()) {
+        if (recipeInput == null || this.seedSlot.getStackInSlot(0).isEmpty()) {
             return 0;
         }
 
-        int seedTier = SeedManager.getSeedTier(itemStackSeed.getItem());
-        int effectiveSeedCount = Math.min(itemStackSeed.getCount(), getMaxEffectiveSeedCount());
+        int seedTier = SeedManager.getSeedTier(recipeInput);
+        int effectiveSeedCount = Math.min(this.seedSlot.getStackInSlot(0).getCount(), getMaxEffectiveSeedCount());
 
-        return (int) (ConfigValue.seedSpeed * 20.0f * ConfigValue.seedLevelMultiplier[(seedTier - 1)] * (1 + (effectiveSeedCount - 1) * ConfigValue.seedNumberMultiplier)) / this.blockLevel;
+        return (int) (ConfigValue.seedSpeed * 20 * ConfigValue.seedLevelMultiplier[seedTier - 1] * (1 + (effectiveSeedCount - 1) * ConfigValue.seedNumberMultiplier)) / this.blockLevel;
     }
 
     protected int getMaxEffectiveSeedCount() {
-        ItemStack itemStackSeed = this.seedSlot.getStackInSlot(0);
         ItemStack itemStackOutput = this.outputSlot.getStackInSlot(0);
-        int seedTier = SeedManager.getSeedTier(itemStackSeed.getItem());
 
-        int maxEffectiveSeedCount = (itemStackOutput.getMaxStackSize() - itemStackOutput.getCount()) / SeedManager.getResultItemCount(itemStackSeed.getItem());
-        if (seedTier >= 6) {
-            int rootBlockCount = this.seedSlot.getStackInSlot(1).getCount();
-            maxEffectiveSeedCount = Math.min(maxEffectiveSeedCount, rootBlockCount);
+        int maxEffectiveSeedCount = (itemStackOutput.getMaxStackSize() - itemStackOutput.getCount()) / SeedManager.getResultItemCount(recipeInput);
+        if (SeedManager.isTier6Seed(recipeInput)) {
+            if (this.seedSlot.getSlots() == 2) {
+                int rootBlockCount = this.seedSlot.getStackInSlot(1).getCount();
+                maxEffectiveSeedCount = Math.min(maxEffectiveSeedCount, rootBlockCount);
+            } else {
+                maxEffectiveSeedCount = 0;
+            }
         }
         return maxEffectiveSeedCount;
     }
@@ -210,12 +228,14 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
      */
     @Nullable
     private ItemStack[] getSeedAndEssence() {
-        ItemStack[] items = null;
-
         Item itemSeed = this.seedSlot.getStackInSlot(0).getItem();
+        if (itemSeed == recipeInput) {
+            return new ItemStack[]{recipeInput.getDefaultInstance(), recipeOutput, recipeOutputOther};
+        }
 
+        ItemStack[] items = null;
         // 判断种子槽是否为空
-        if (!this.seedSlot.getStackInSlot(0).isEmpty() && SeedManager.getResultItemCount(itemSeed) != 0) {
+        if (itemSeed != Items.AIR && SeedManager.getResultItemCount(itemSeed) != 0) {
             // 获取格子中的种子
             items = new ItemStack[3];
             items[0] = itemSeed.getDefaultInstance();
@@ -321,6 +341,12 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
     public void updateNBT(NBTTagCompound NBT) {
         this.timeRun = NBT.getInteger("timeRun");
         this.maxTimeRun = NBT.getInteger("maxTimeRun");
+
+        if (!NBT.hasKey("recipe")) {
+            recipeInput = Item.getByNameOrId(NBT.getString("recipeInput"));
+            recipeOutput = new ItemStack(NBT.getCompoundTag("recipeOutput"));
+            recipeOutputOther = new ItemStack(NBT.getCompoundTag("recipeOutputOther"));
+        }
     }
 
     @Override
@@ -328,6 +354,14 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         NBTTagCompound NBT = new NBTTagCompound();
         NBT.setInteger("timeRun", timeRun);
         NBT.setInteger("maxTimeRun", maxTimeRun);
+
+        if (recipeInput != null) {
+            NBT.setString("recipeInput", Objects.requireNonNull(recipeInput.getRegistryName()).toString());
+            NBT.setTag("recipeOutput", recipeOutput.writeToNBT(new NBTTagCompound()));
+            NBT.setTag("recipeOutputOther", recipeOutputOther.writeToNBT(new NBTTagCompound()));
+        } else {
+            NBT.setString("recipe", "null");
+        }
         return NBT;
     }
 }

@@ -2,13 +2,11 @@ package com.xiaoxianben.lazymystical.block;
 
 import com.xiaoxianben.lazymystical.LazyMystical;
 import com.xiaoxianben.lazymystical.api.IHasModel;
-import com.xiaoxianben.lazymystical.util.ModInformation;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 
 public class BlockBasic extends Block implements IHasModel {
 
@@ -16,7 +14,7 @@ public class BlockBasic extends Block implements IHasModel {
 
     public BlockBasic(String name, Material materialIn, SoundType soundType, CreativeTabs tab) {
         super(materialIn);
-        setUnlocalizedName(ModInformation.MOD_ID + '-' + name);
+        setUnlocalizedName(LazyMystical.MOD_ID + '-' + name);
         setRegistryName(name);
         setCreativeTab(tab);
 
@@ -25,8 +23,8 @@ public class BlockBasic extends Block implements IHasModel {
         this.setHardness(10.0F);
         this.setHarvestLevel("pickaxe", 1);
 
-        LazyMystical.BLOCKS.add(this);
-        LazyMystical.ITEMS.add(new ItemBlock(this).setRegistryName(name));
+//        LazyMystical.BLOCKS.add(this);
+//        LazyMystical.ITEMS.add(new ItemBlock(this).setRegistryName(name));
     }
 
     public int getLevel() {

@@ -67,7 +67,7 @@ public class BlockAccelerator extends BlockBasic {
                 Block cropBlock = cropState.getBlock();
 
                 if (cropBlock instanceof IGrowable || cropBlock instanceof IPlantable) {
-                    for (int i = 0; i < this.getLevel(); i++) {
+                    for (int i = 0; i < new Random().nextInt(this.getLevel()) + 1; i++) {
                         cropBlock.updateTick(world, aoePos, cropState, world.rand);
                     }
                 }
@@ -77,7 +77,7 @@ public class BlockAccelerator extends BlockBasic {
     }
 
     private void worldUpdate(World world, BlockPos pos, IBlockState state) {
-        // 随机的结果在 (0.64~1.21]
+        // 随机的结果在 [0.64~1.21)
         int time = (int) (ConfigValue.acceleratorSpeed * 20 * getRandomFloat() * getRandomFloat());
         world.scheduleBlockUpdate(pos, state.getBlock(), time, 1);
     }

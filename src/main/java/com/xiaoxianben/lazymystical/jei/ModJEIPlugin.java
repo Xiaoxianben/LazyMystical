@@ -1,9 +1,8 @@
 package com.xiaoxianben.lazymystical.jei;
 
 
-import com.xiaoxianben.lazymystical.LazyMystical;
 import com.xiaoxianben.lazymystical.gui.BlockGUI;
-import com.xiaoxianben.lazymystical.init.EnumBlockLevel;
+import com.xiaoxianben.lazymystical.init.EnumBlockType;
 import com.xiaoxianben.lazymystical.jei.advancedGuiHandler.SeedCultivatorAdvancedGuiHandler;
 import com.xiaoxianben.lazymystical.jei.recipeCategory.SeedCultivatorCategory;
 import com.xiaoxianben.lazymystical.jei.recipeWrapper.SeedCultivatorWrapper;
@@ -19,10 +18,8 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @JEIPlugin
 public class ModJEIPlugin implements IModPlugin {
@@ -39,10 +36,11 @@ public class ModJEIPlugin implements IModPlugin {
     @ParametersAreNonnullByDefault
     @Override
     public void register(IModRegistry registry) {
-        for (Block seedCultivator : LazyMystical.BLOCKS.subList(0, EnumBlockLevel.enableNumber())) {
-            if (Objects.nonNull(seedCultivator)) {
-                registry.addRecipeCatalyst(Item.getItemFromBlock(seedCultivator).getDefaultInstance(), SeedCultivatorCategory.ID);
-            }
+        for (Block[] seedCultivators : EnumBlockType.SeedCultivator.getAllBlocks()) {
+            Arrays.stream(seedCultivators)
+                    .filter(Objects::nonNull)
+                    .map(block -> Item.getItemFromBlock(block).getDefaultInstance())
+                    .forEach(itemStack -> registry.addRecipeCatalyst(itemStack, SeedCultivatorCategory.ID));
         }
 
         registry.addRecipes(SeedCultivatorRecipes(), SeedCultivatorCategory.ID);

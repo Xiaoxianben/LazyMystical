@@ -1,17 +1,14 @@
 package com.xiaoxianben.lazymystical;
 
-import com.xiaoxianben.lazymystical.api.IModInit;
 import com.xiaoxianben.lazymystical.config.ConfigLoader;
 import com.xiaoxianben.lazymystical.gui.GUIHandler;
-import com.xiaoxianben.lazymystical.init.EnumBlockLevel;
-import com.xiaoxianben.lazymystical.init.ModBlocks;
+import com.xiaoxianben.lazymystical.init.EnumBlockType;
 import com.xiaoxianben.lazymystical.init.ModRecipe;
+import com.xiaoxianben.lazymystical.init.register.EnumModRegister;
 import com.xiaoxianben.lazymystical.jsonRecipe.ModJsonRecipe;
 import com.xiaoxianben.lazymystical.manager.SeedManager;
 import com.xiaoxianben.lazymystical.proxy.CommonProxy;
 import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
-import com.xiaoxianben.lazymystical.util.ModInformation;
-import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -25,54 +22,44 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 @Mod(
-        modid = ModInformation.MOD_ID,
-        name = ModInformation.NAME,
-        version = ModInformation.VERSION,
+        modid = LazyMystical.MOD_ID,
+        name = LazyMystical.NAME,
+        version = LazyMystical.VERSION,
         dependencies = "required-after:mysticalagriculture;after:mysticalagradditions;after:jei"
 )
 public class LazyMystical {
 
-
-    public static List<Item> ITEMS = new ArrayList<>();
-    public static List<Block> BLOCKS = new ArrayList<>();
-    public List<IModInit> modInit = new ArrayList<>();
-
-
+    public static final String NAME = "Lazy Mystical";
+    public static final String VERSION = "1.4.0";
+    public static final String MOD_ID = "lazymystical";
     @Mod.Instance
     public static LazyMystical instance;
-    @SidedProxy(clientSide = ModInformation.CLIENT_PROXY_CLASS, serverSide = ModInformation.COMMON_PROXY_CLASS)
+    @SidedProxy(clientSide = "com.xiaoxianben.lazymystical.proxy.ClientProxy", serverSide = "com.xiaoxianben.lazymystical.proxy.CommonProxy")
     public static CommonProxy proxy;
-
-
-    public static CreativeTabs tab = new CreativeTabs(ModInformation.MOD_ID) {
+    public static final CreativeTabs tab = new CreativeTabs(MOD_ID) {
         @Nonnull
         @Override
         public ItemStack getTabIconItem() {
-            return Item.getItemFromBlock(BLOCKS.get(EnumBlockLevel.enableNumber())).getDefaultInstance();
+            return Item.getItemFromBlock(EnumBlockType.SeedCultivator.getBlocks(EnumModRegister.MINECRAFT)[4]).getDefaultInstance();
         }
     };
 //    private static SimpleNetworkWrapper network;
 
 
     public LazyMystical() {
-        modInit.add(new ModBlocks());
-        modInit.add(new ModRecipe());
     }
 
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        ConfigLoader.preInitConfigLoader(event);
+        new ConfigLoader(event).load();
 
-        for (EnumBlockLevel value : EnumBlockLevel.values()) {
-            value.setEnable();
+        for (EnumModRegister modRegister : EnumModRegister.values()) {
+            modRegister.setEnable();
+            modRegister.preInit();
         }
-
-        modInit.forEach(IModInit::preInit);
     }
 
     @Mod.EventHandler
@@ -80,22 +67,28 @@ public class LazyMystical {
 //        network = NetworkRegistry.INSTANCE.newSimpleChannel(ModInformation.MOD_ID);
 //        network.registerMessage(new PacketConsciousness.Handler(), PacketConsciousness.class, 1, Side.CLIENT);
 
-        modInit.forEach(IModInit::init);
+        ModRecipe.instance = new ModRecipe();
+        for (EnumModRegister modRegister : EnumModRegister.values()) {
+            modRegister.init();
+        }
+
+        SeedManager seedManager = new SeedManager();
+        new ModJsonRecipe(seedManager::addRecipe);
+        seedManager.init();
 
         // 注册物品
         NetworkRegistry.INSTANCE.registerGuiHandler(LazyMystical.instance, new GUIHandler());
-        GameRegistry.registerTileEntity(TESeedCultivator.class, new ResourceLocation(ModInformation.MOD_ID, "te_seed_cultivator"));
+        GameRegistry.registerTileEntity(TESeedCultivator.class, new ResourceLocation(MOD_ID, "te_seed_cultivator"));
     }
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
+        for (EnumModRegister modRegister : EnumModRegister.values()) {
+            modRegister.posInit();
+        }
 
-        modInit.forEach(IModInit::postInit);
+        ModRecipe.instance = null;
 
-        modInit = null;
-        SeedManager seedManager = new SeedManager();
-        new ModJsonRecipe(seedManager::addRecipe);
-        seedManager.init();
     }
 
 //    public static SimpleNetworkWrapper getNetwork() {

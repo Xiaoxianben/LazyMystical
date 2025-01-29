@@ -17,12 +17,9 @@ import java.util.List;
 
 public class BlockContainer extends Container {
 
+    protected final List<Rectangle> BlockRectangles = new ArrayList<>();
+    protected final TESeedCultivator tileEntity;
     protected int addSlotCount = 3;
-
-    protected List<Rectangle> BlockRectangles = new ArrayList<>();
-
-
-    protected TESeedCultivator tileEntity;
 
 
     public BlockContainer(EntityPlayer player, TESeedCultivator tileEntity) {
@@ -91,15 +88,15 @@ public class BlockContainer extends Container {
                 }
             }
 
+
             if (itemStackOfSlot.getCount() == 0) {
                 slot.putStack(ItemStack.EMPTY);
-            } else {
-                slot.onSlotChanged();
             }
-
             if (itemStackOfSlot.getCount() == itemstack.getCount()) {
                 return ItemStack.EMPTY;
             }
+
+            slot.onSlotChanged();
             slot.onTake(player, itemStackOfSlot);
         }
         return itemstack;

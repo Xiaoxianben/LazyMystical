@@ -1,8 +1,8 @@
 package com.xiaoxianben.lazymystical.jei.recipeCategory;
 
+import com.xiaoxianben.lazymystical.LazyMystical;
 import com.xiaoxianben.lazymystical.config.ConfigValue;
 import com.xiaoxianben.lazymystical.jei.recipeWrapper.SeedCultivatorWrapper;
-import com.xiaoxianben.lazymystical.util.ModInformation;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableAnimated;
@@ -22,7 +22,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class SeedCultivatorCategory implements IRecipeCategory<SeedCultivatorWrapper> {
 
-    public static final String ID = ModInformation.MOD_ID + ":seed_cultivator_category";
+    public static final String ID = LazyMystical.MOD_ID + ":seed_cultivator_category";
 
     public final IDrawable background, icon, animation;
 
@@ -30,11 +30,11 @@ public class SeedCultivatorCategory implements IRecipeCategory<SeedCultivatorWra
     public SeedCultivatorCategory(IGuiHelper guiHelper) {
         int x = 0;
         if (Loader.isModLoaded("mysticalagradditions")) x = 14;
-        this.background = guiHelper.createDrawable(new ResourceLocation(ModInformation.MOD_ID, "textures/gui/1.png"), 38, 28, 100, 26 + x);
+        this.background = guiHelper.createDrawable(new ResourceLocation(LazyMystical.MOD_ID, "textures/gui/1.png"), 38, 28, 100, 26 + x);
 
-        this.icon = guiHelper.drawableBuilder(new ResourceLocation(ModInformation.MOD_ID, "textures/blocks/machine/1.png"), 0, 0, 16, 16).setTextureSize(16, 16).build();
+        this.icon = guiHelper.drawableBuilder(new ResourceLocation(LazyMystical.MOD_ID, "textures/blocks/machine/1.png"), 0, 0, 16, 16).setTextureSize(16, 16).build();
         this.animation = guiHelper.createAnimatedDrawable(
-                guiHelper.createDrawable(new ResourceLocation(ModInformation.MOD_ID, "textures/gui/1.png"), 176, 0, 22, 16),
+                guiHelper.createDrawable(new ResourceLocation(LazyMystical.MOD_ID, "textures/gui/1.png"), 176, 0, 22, 16),
                 20 * ConfigValue.seedSpeed,
                 IDrawableAnimated.StartDirection.LEFT, false
         );
@@ -56,7 +56,7 @@ public class SeedCultivatorCategory implements IRecipeCategory<SeedCultivatorWra
     @Nonnull
     @Override
     public String getModName() {
-        return ModInformation.MOD_ID;
+        return LazyMystical.MOD_ID;
     }
 
     @Nonnull

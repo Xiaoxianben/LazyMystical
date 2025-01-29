@@ -14,15 +14,6 @@ public class SeedItemHandler extends InputItemHandler {
         super(slotMax, run);
     }
 
-    /**
-     * Retrieves the maximum stack size allowed to exist in the given slot.
-     *
-     * @param slot Slot to query.
-     * @return The maximum stack size allowed in the slot.
-     */
-    public int getSlotLimit(int slot) {
-        return slot < this.getSlots() ? 64 : 1;
-    }
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
@@ -30,7 +21,7 @@ public class SeedItemHandler extends InputItemHandler {
             case 0:
                 return SeedManager.getResultItemCount(stack.getItem()) != 0;
             case 1:
-                return SeedManager.getRootBlock(this.getStackInSlot(0).getItem()) == Block.getBlockFromItem(stack.getItem());
+                return (!stack.isEmpty()) && SeedManager.getRootBlock(this.getStackInSlot(0).getItem()) == Block.getBlockFromItem(stack.getItem());
             default:
                 return false;
         }

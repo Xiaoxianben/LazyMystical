@@ -1,7 +1,7 @@
 package com.xiaoxianben.lazymystical.gui;
 
+import com.xiaoxianben.lazymystical.LazyMystical;
 import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
-import com.xiaoxianben.lazymystical.util.ModInformation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlockGUI extends GuiContainer {
-    private static final ResourceLocation TEXTURES = new ResourceLocation(ModInformation.MOD_ID, "textures/gui/1.png");
+    private static final ResourceLocation TEXTURES = new ResourceLocation(LazyMystical.MOD_ID, "textures/gui/1.png");
 
     private final TESeedCultivator tileEntity;
     private final FontRenderer fontRenderer;

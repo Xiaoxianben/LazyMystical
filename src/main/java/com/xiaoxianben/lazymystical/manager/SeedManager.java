@@ -1,6 +1,5 @@
 package com.xiaoxianben.lazymystical.manager;
 
-import com.blakebr0.mysticalagriculture.blocks.crop.BlockInferiumCrop;
 import com.blakebr0.mysticalagriculture.crafting.ReprocessorManager;
 import com.blakebr0.mysticalagriculture.crafting.ReprocessorRecipe;
 import com.blakebr0.mysticalagriculture.items.ItemSeed;
@@ -15,7 +14,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nullable;
@@ -27,8 +25,8 @@ public class SeedManager {
     /**
      * 字典：用于获取种子对应的作物
      */
-    protected static LinkedHashMap<Item, List<ItemStack>> recipes = new LinkedHashMap<>();
-    protected static Map<Item, IBlockState> RootBlockRecipes = new HashMap<>();
+    protected static final LinkedHashMap<Item, List<ItemStack>> recipes = new LinkedHashMap<>();
+    protected static final Map<Item, IBlockState> RootBlockRecipes = new HashMap<>();
 
 
     public void init() {
@@ -102,11 +100,6 @@ public class SeedManager {
     }
 
     public static int getResultItemCount(Item seed) {
-        if (seed instanceof IPlantable) {
-            if (((IPlantable) seed).getPlant(null, null).getBlock() instanceof BlockInferiumCrop) {
-                return ((ItemSeed) seed).getTier();
-            }
-        }
         try {
             return recipes.get(seed).get(0).getCount();
         } catch (Exception e) {
@@ -115,7 +108,7 @@ public class SeedManager {
     }
 
     public static boolean isTier6Seed(Item seed) {
-        return !RootBlockRecipes.isEmpty() && RootBlockRecipes.get(seed) != null;
+        return !RootBlockRecipes.isEmpty() && RootBlockRecipes.containsKey(seed);
     }
 
     /**
@@ -131,8 +124,9 @@ public class SeedManager {
      * @return 如果没有相应的rootBlockMeta返回 -1, 否则 返回相应的rootBlockMeta
      */
     public static int getRootBlockMeta(Item seed) {
-        if (getRootBlock(seed) != null)
-            return getRootBlock(seed).getMetaFromState(RootBlockRecipes.get(seed));
+        Block block = getRootBlock(seed);
+        if (block != null)
+            return block.getMetaFromState(RootBlockRecipes.get(seed));
         return -1;
     }
 

@@ -16,12 +16,10 @@ public class GUIHandler implements IGuiHandler {
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         //通过编码创建服务端的Container
         TESeedCultivator teSeedCultivator = (TESeedCultivator) world.getTileEntity(new BlockPos(x, y, z));
-        switch (ID) {
-            case BlockGUI:
-                return new BlockContainer(player, teSeedCultivator);
-            default:
-                return null;
+        if (ID == BlockGUI) {
+            return new BlockContainer(player, teSeedCultivator);
         }
+        return null;
     }
 
     //在客户端中运行的逻辑
@@ -29,11 +27,9 @@ public class GUIHandler implements IGuiHandler {
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         TESeedCultivator teSeedCultivator = (TESeedCultivator) world.getTileEntity(new BlockPos(x, y, z));
         //通过编码创建客户端的Container与GuiContainer（Forge会自动托管服务端到客户端的Container同步）
-        switch (ID) {
-            case BlockGUI:
-                return new BlockGUI(new BlockContainer(player, teSeedCultivator), teSeedCultivator);
-            default:
-                return null;
+        if (ID == BlockGUI) {
+            return new BlockGUI(new BlockContainer(player, teSeedCultivator), teSeedCultivator);
         }
+        return null;
     }
 }
