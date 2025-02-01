@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ModConfigs {
 
-    protected static String cultivatorCategory = "cultivator";
+    protected static final String cultivatorCategory = "cultivator";
 
     public static ForgeConfigSpec config;
 

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "lazymystical:block/seed_cultivator_6"
+    },
+    "facing=south": {
+      "model": "lazymystical:block/seed_cultivator_6",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "lazymystical:block/seed_cultivator_6",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "lazymystical:block/seed_cultivator_6",
+      "y": 90
+    }
+  }
+}

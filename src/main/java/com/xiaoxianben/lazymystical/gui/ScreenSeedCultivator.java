@@ -9,8 +9,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.ForgeI18n;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.awt.*;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenSeedCultivator extends ContainerScreen<ContainerSeedCultivator> {
@@ -28,15 +30,25 @@ public class ScreenSeedCultivator extends ContainerScreen<ContainerSeedCultivato
         this.minecraft.getTextureManager().bind(TEXTURES);
         this.blit(matrixStack, this.getGuiLeft(), this.getGuiTop(), 0, 0, this.getXSize(), this.getYSize());
 
-//        for (Rectangle guiExtraArea : this.getGuiExtraAreas()) {
-//            this.blit(matrixStack, guiExtraArea.x, guiExtraArea.y, 7, 83, guiExtraArea.width, guiExtraArea.height);
-//        }
+        for (Rectangle guiExtraArea : this.menu.getGuiExtraAreas()) {
+            this.blit(matrixStack, this.getGuiLeft() + guiExtraArea.x, this.getGuiTop() + guiExtraArea.y,
+                    7, 83, guiExtraArea.width, guiExtraArea.height);
+        }
+
+        if (this.menu.te.blockLevel > 5) {
+            this.blit(matrixStack, this.getGuiLeft() + 38, this.getGuiTop() + 50,
+                    7, 83, 18, 18);
+        }
+
         IntArraySeedCultivator intArray = this.menu.intArray;
         if (intArray.get(0) > -1) {
             float i1 = ((float) (intArray.get(1) - intArray.get(0))) / intArray.get(1);
             int weight = (int) (i1 * 22);
             this.blit(matrixStack, this.getGuiLeft() + 63, this.getGuiTop() + 33, 176, 0, Math.max(weight, 1), 16);
         }
+
+//        drawCenteredString(matrixStack, this.font, ForgeI18n.getPattern("gui.lazymystical.seed_cultivator"),
+//                this.getXSize(), this.getGuiTop(), 0X00000000);
     }
 
 

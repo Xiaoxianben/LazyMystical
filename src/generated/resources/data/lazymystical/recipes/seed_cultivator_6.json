@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EBE",
+    "BXB",
+    "EBE"
+  ],
+  "key": {
+    "X": {
+      "item": "lazymystical:seed_cultivator_5"
+    },
+    "B": {
+      "item": "mysticalagradditions:insanium_ingot_block"
+    },
+    "E": {
+      "item": "mysticalagradditions:insanium_block"
+    }
+  },
+  "result": {
+    "item": "lazymystical:seed_cultivator_6"
+  }
+}

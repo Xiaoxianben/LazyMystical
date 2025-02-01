@@ -8,7 +8,7 @@ import com.xiaoxianben.lazymystical.recipe.recipeType.IRecipeType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Recipe<i, o> {
+public class RecipeJson<i, o> {
 
     private final IRecipeType<i> input;
     private final IRecipeType<o> output;
@@ -17,17 +17,17 @@ public class Recipe<i, o> {
     public List<i> inputs = new ArrayList<>();
     public List<o> outputs = new ArrayList<>();
 
-    public Recipe(IRecipeType<i> input, IRecipeType<o> output) {
+    public RecipeJson(IRecipeType<i> input, IRecipeType<o> output) {
         this.input = input;
         this.output = output;
     }
 
-    public Recipe<i, o> create(int id, List<i> inputs, List<o> outputs) {
-        Recipe<i, o> recipe = new Recipe<>(input, output);
-        recipe.id = id;
-        recipe.inputs = inputs;
-        recipe.outputs = outputs;
-        return recipe;
+    public RecipeJson<i, o> create(int id, List<i> inputs, List<o> outputs) {
+        RecipeJson<i, o> recipeJson = new RecipeJson<>(input, output);
+        recipeJson.id = id;
+        recipeJson.inputs = inputs;
+        recipeJson.outputs = outputs;
+        return recipeJson;
     }
 
     public JsonObject toJsonObject() {
@@ -49,20 +49,20 @@ public class Recipe<i, o> {
         return json;
     }
 
-    public Recipe<i, o> JsonObjectToRecipe(JsonObject json) {
-        Recipe<i, o> recipe = new Recipe<>(input, output);
-        recipe.id = json.get("id").getAsInt();
+    public RecipeJson<i, o> JsonObjectToRecipe(JsonObject json) {
+        RecipeJson<i, o> recipeJson = new RecipeJson<>(input, output);
+        recipeJson.id = json.get("id").getAsInt();
 
         JsonArray inputJsonArray = json.getAsJsonArray("inputs");
         for (int i = 0; i < inputJsonArray.size(); i++) {
-            recipe.inputs.add(input.getRecipe(inputJsonArray.get(i).getAsJsonObject()));
+            recipeJson.inputs.add(input.getRecipe(inputJsonArray.get(i).getAsJsonObject()));
         }
 
         JsonArray outputJsonArray = json.getAsJsonArray("outputs");
         for (int i = 0; i < outputJsonArray.size(); i++) {
-            recipe.outputs.add(output.getRecipe(outputJsonArray.get(i).getAsJsonObject()));
+            recipeJson.outputs.add(output.getRecipe(outputJsonArray.get(i).getAsJsonObject()));
         }
-        return recipe;
+        return recipeJson;
     }
 
     public IRecipeType<i> getInputRecipeType() {

@@ -18,14 +18,14 @@ import java.util.List;
 public class ModRecipe {
 
 
-    public static List<Recipe<Item, ItemStack>> seedManagerRecipe;
+    public static List<RecipeJson<Item, ItemStack>> seedManagerRecipeJson;
 
 
     public ModRecipe() {
 
-        List<Recipe<Item, ItemStack>> seedManager = new ArrayList<>();
+        List<RecipeJson<Item, ItemStack>> seedManager = new ArrayList<>();
         SeedManager.addRecipe(seedManager);
-        seedManagerRecipe = saveRecipes(seedManager, "seedManagerRecipe");
+        seedManagerRecipeJson = saveRecipes(seedManager, "seedManagerRecipe");
 
     }
 
@@ -39,7 +39,7 @@ public class ModRecipe {
      * @return 返回加载的配方列表，若文件不存在则返回 defaultValue
      * @throws RuntimeException 当无法写入配方文件时抛出运行时异常
      */
-    public <i, o> List<Recipe<i, o>> saveRecipes(List<Recipe<i, o>> defaultValue, String recipeName) {
+    public <i, o> List<RecipeJson<i, o>> saveRecipes(List<RecipeJson<i, o>> defaultValue, String recipeName) {
         // 根据配方名称获取配方文件的路径
         File recipeFile = new File(getRecipePath(recipeName));
         // 如果配方文件已存在，则尝试从文件中加载配方信息
@@ -51,7 +51,7 @@ public class ModRecipe {
             try (FileWriter writer = new FileWriter(recipeFile)) {
                 // 将对象转换为 JSON 格式并写入文件
                 JsonArray jsonArray = new JsonArray();
-                for (Recipe<i, o> item : defaultValue) {
+                for (RecipeJson<i, o> item : defaultValue) {
                     jsonArray.add(item.toJsonObject());
                 }
                 // 使用 Gson 进行格式化输出，增强文件的可读性
@@ -77,18 +77,18 @@ public class ModRecipe {
      * @return 返回加载的配方列表
      * @throws RuntimeException 如果无法读取配方文件，则抛出运行时异常
      */
-    public <i, o> List<Recipe<i, o>> loadRecipes(File recipeFile, final Recipe<i, o> defaultValue) {
+    public <i, o> List<RecipeJson<i, o>> loadRecipes(File recipeFile, final RecipeJson<i, o> defaultValue) {
         try (FileReader reader = new FileReader(recipeFile)) {
             // 创建一个宽容的Gson对象，用于解析JSON
             Gson gson = new GsonBuilder().setLenient().create();
             // 将文件内容解析为JsonArray
             JsonArray jsonArray = gson.fromJson(reader, JsonArray.class);
             // 使用默认值初始化一个配方对象
-            Recipe<i, o> recipe = new Recipe<>(defaultValue.getInputRecipeType(), defaultValue.getOutputRecipeType());
+            RecipeJson<i, o> recipeJson = new RecipeJson<>(defaultValue.getInputRecipeType(), defaultValue.getOutputRecipeType());
             // 初始化配方列表
-            List<Recipe<i, o>> value = new ArrayList<>();
+            List<RecipeJson<i, o>> value = new ArrayList<>();
             // 遍历JsonArray，将每个元素转换为Recipe对象并添加到列表中
-            jsonArray.forEach(jsonElement -> value.add(recipe.JsonObjectToRecipe(jsonElement.getAsJsonObject())));
+            jsonArray.forEach(jsonElement -> value.add(recipeJson.JsonObjectToRecipe(jsonElement.getAsJsonObject())));
             return value;
         } catch (Exception e) {
             // 捕获异常，抛出运行时异常并包含异常信息和文件名

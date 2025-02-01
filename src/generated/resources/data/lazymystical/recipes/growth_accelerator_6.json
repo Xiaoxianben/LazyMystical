@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ESE",
+    "SDS",
+    "ESE"
+  ],
+  "key": {
+    "E": {
+      "item": "mysticalagradditions:insanium_essence"
+    },
+    "S": {
+      "tag": "forge:stone"
+    },
+    "D": {
+      "item": "mysticalagradditions:insanium_gemstone"
+    }
+  },
+  "result": {
+    "item": "lazymystical:growth_accelerator_6"
+  }
+}

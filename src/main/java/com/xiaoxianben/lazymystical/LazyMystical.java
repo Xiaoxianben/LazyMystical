@@ -35,7 +35,7 @@ public class LazyMystical {
         @Nonnull
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(BlockRegistry.SEED_CULTIVATOR[0].get().asItem());
+            return new ItemStack(BlockRegistry.SEED_CULTIVATOR.get(0).get().asItem());
         }
     };
 
@@ -68,6 +68,6 @@ public class LazyMystical {
     public void FMLLoadCompleteEvent(FMLLoadCompleteEvent event) {
         ConfigValue.init();
         new ModRecipe();
-        SeedManager.init();
+        new SeedManager().init();
     }
 }

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EBE",
+    "BXB",
+    "EBE"
+  ],
+  "key": {
+    "X": {
+      "item": "mysticalagriculture:machine_frame"
+    },
+    "B": {
+      "item": "mysticalagriculture:inferium_ingot_block"
+    },
+    "E": {
+      "item": "mysticalagriculture:inferium_block"
+    }
+  },
+  "result": {
+    "item": "lazymystical:seed_cultivator_1"
+  }
+}

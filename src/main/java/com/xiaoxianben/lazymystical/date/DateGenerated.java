@@ -14,6 +14,10 @@ public class DateGenerated {
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
         dataGenerator.addProvider(new BlockSeedCultivatorStateProvider(dataGenerator, existingFileHelper));
-        dataGenerator.addProvider(new BlockDropsTagProvider(dataGenerator));
+        dataGenerator.addProvider(new BlockAcceleratorStateProvider(dataGenerator, existingFileHelper));
+//        dataGenerator.addProvider(new BlockDropsTagProvider(dataGenerator));
+        dataGenerator.addProvider(new CultivatorBlockRecipeProvider(dataGenerator));
+        dataGenerator.addProvider(new AcceleratorRecipeProvider(dataGenerator));
+
     }
 }

@@ -31,7 +31,7 @@ archivesBaseName = 'lazymystical-1.16.5'
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 
 println('Java: ' + System.getProperty('java.version') + "\n" +
-        ' JVM: ' + System.getProperty('java.vm.version') +
+        'JVM: ' + System.getProperty('java.vm.version') +
         '(' + System.getProperty('java.vendor') + ')\nArch: ' + System.getProperty('os.arch'))
 
 minecraft {
@@ -78,7 +78,7 @@ minecraft {
         }
 
         server {
-            workingDirectory project.file('run')
+            workingDirectory file('run')
 
             // Recommended logging data for a userdev environment
             // The markers can be changed as needed.
@@ -100,7 +100,7 @@ minecraft {
         }
 
         data {
-            workingDirectory project.file('run')
+            workingDirectory file('run')
 
             // Recommended logging data for a userdev environment
             // The markers can be changed as needed.
@@ -136,7 +136,13 @@ repositories {
     maven {
         url = "https://api.modrinth.com/maven"
     }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
 }
+
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
@@ -152,6 +158,11 @@ dependencies {
     implementation fg.deobf("maven.modrinth:cucumber:4.1.12")
     implementation fg.deobf("maven.modrinth:mystical-agriculture:4.2.6")
     implementation fg.deobf("maven.modrinth:mystical-agradditions:4.2.4")
+
+    // compile against the JEI API but do not include it at runtime
+    compileOnly fg.deobf("mezz.jei:jei-1.16.5:${jei_version}:api")
+    // at runtime, use the full JEI jar
+    runtimeOnly fg.deobf("mezz.jei:jei-1.16.5:${jei_version}")
 
     // Real examples
     // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env

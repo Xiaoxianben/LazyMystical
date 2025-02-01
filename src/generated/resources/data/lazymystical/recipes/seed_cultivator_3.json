@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EBE",
+    "BXB",
+    "EBE"
+  ],
+  "key": {
+    "X": {
+      "item": "lazymystical:seed_cultivator_2"
+    },
+    "B": {
+      "item": "mysticalagriculture:tertium_ingot_block"
+    },
+    "E": {
+      "item": "mysticalagriculture:tertium_block"
+    }
+  },
+  "result": {
+    "item": "lazymystical:seed_cultivator_3"
+  }
+}

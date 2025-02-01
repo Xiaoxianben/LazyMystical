@@ -18,9 +18,9 @@ public class BlockSeedCultivatorStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        for (int i = 0; i < BlockRegistry.SEED_CULTIVATOR.length; i++) {
+        for (int i = 0; i < BlockRegistry.SEED_CULTIVATOR.size(); i++) {
             final String name = "block/seed_cultivator_" + (i + 1);
-            Block block = BlockRegistry.SEED_CULTIVATOR[i].get();
+            Block block = BlockRegistry.SEED_CULTIVATOR.get(i).get();
             final ResourceLocation texture = this.modLoc("blocks/seed_cultivator/" + (i + 1));
             final ResourceLocation textureSide = this.modLoc("blocks/seed_cultivator/" + (i + 1) + "_side");
 

@@ -2,11 +2,10 @@ package com.xiaoxianben.lazymystical.manager;
 
 import com.blakebr0.mysticalagriculture.api.crafting.IReprocessorRecipe;
 import com.blakebr0.mysticalagriculture.api.crafting.RecipeTypes;
-import com.blakebr0.mysticalagriculture.block.InferiumCropBlock;
 import com.blakebr0.mysticalagriculture.crafting.recipe.ReprocessorRecipe;
-import com.blakebr0.mysticalagriculture.item.MysticalSeedsItem;
+import com.blakebr0.mysticalagriculture.registry.CropRegistry;
 import com.xiaoxianben.lazymystical.recipe.ModRecipe;
-import com.xiaoxianben.lazymystical.recipe.Recipe;
+import com.xiaoxianben.lazymystical.recipe.RecipeJson;
 import com.xiaoxianben.lazymystical.recipe.recipeType.RecipeTypesOwn;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.IInventory;
@@ -14,29 +13,17 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SeedManager {
 
 
-    private static final List<String> acceleratorBlockNames = Arrays.asList("inferium_growth_accelerator", "prudentium_growth_accelerator", "tertium_growth_accelerator", "imperium_growth_accelerator", "supremium_growth_accelerator");
-    public static Map<Item, List<ItemStack>> recipes = new HashMap<>();
+    private static final List<String> acceleratorBlockNames = Arrays.asList("inferium_growth_accelerator", "prudentium_growth_accelerator", "tertium_growth_accelerator", "imperium_growth_accelerator", "supremium_growth_accelerator", "growth_accelerator_6");
+    public static Map<Item, seedResultItem> recipes = new LinkedHashMap<>();
 
-    public static void init() {
-        if (ModList.get().isLoaded("mysticalagradditions")) {
-        }
-        for (Recipe<Item, ItemStack> recipe : ModRecipe.seedManagerRecipe) {
-            recipes.put(recipe.inputs.get(0), recipe.outputs);
-        }
-        recipes = Collections.unmodifiableMap(recipes);
-    }
-
-
-    public static void addRecipe(List<Recipe<Item, ItemStack>> recipes) {
+    public static void addRecipe(List<RecipeJson<Item, ItemStack>> recipeJsons) {
         LinkedHashMap<Item, List<ItemStack>> seedManagerMap = new LinkedHashMap<>();
 
         seedManagerMap.put(Items.WHEAT_SEEDS, Collections.singletonList(Items.WHEAT.getDefaultInstance())); // 小麦
@@ -54,82 +41,120 @@ public class SeedManager {
         seedManagerMap.put(Items.NETHER_WART, Collections.singletonList(Items.NETHER_WART.getDefaultInstance())); // 地狱疣
 
         int i = 0;
-        Recipe<Item, ItemStack> seedManagerRecipe = new Recipe<>(RecipeTypesOwn.recipe_item, RecipeTypesOwn.recipe_itemStack);
+        RecipeJson<Item, ItemStack> seedManagerRecipeJson = new RecipeJson<>(RecipeTypesOwn.recipe_item, RecipeTypesOwn.recipe_itemStack);
         for (Map.Entry<Item, List<ItemStack>> entry : seedManagerMap.entrySet()) {
-            recipes.add(seedManagerRecipe.create(i, Collections.singletonList(entry.getKey()), entry.getValue()));
+            recipeJsons.add(seedManagerRecipeJson.create(i, Collections.singletonList(entry.getKey()), entry.getValue()));
             ++i;
         }
     }
-
 
     public static ReprocessorRecipe getModReprocessorRecipe(World world, IInventory inventory) {
         IReprocessorRecipe recipe = world.getRecipeManager().getRecipeFor(RecipeTypes.REPROCESSOR, inventory, world).orElse(null);
         return recipe instanceof ReprocessorRecipe ? (ReprocessorRecipe) recipe : null;
     }
 
-    @Nullable
-    public static ItemStack getResultItem(World world, IInventory inventory, int slot) {
-        ReprocessorRecipe recipe = getModReprocessorRecipe(world, inventory);
-        if (recipe != null) {
-            return recipe.getCraftingResult(null);
-        }
+    public static boolean isTrueSeed(Item seed) {
+        return recipes.containsKey(seed);
+    }
 
+    @Nullable
+    public static ItemStack getResultItem(Item seed) {
         try {
-            Item seed = inventory.getItem(slot).getItem();
-            return recipes.get(seed).get(0).copy();
+            return recipes.get(seed).getResultItem().copy();
         } catch (Exception e) {
             return null;
         }
     }
 
-
-    public static boolean isTrueSeed(World world, IInventory inventory, int slot) {
-        return getResultItem(world, inventory, slot) != null;
-    }
-
-
     public static int getResultItemCount(Item seed) {
-        if (seed instanceof MysticalSeedsItem) {
-            if (((MysticalSeedsItem) seed).getCrop().getCrop() instanceof InferiumCropBlock) {
-                return ((MysticalSeedsItem) seed).getCrop().getTier().getValue();
-            }
-        }
         try {
-            return recipes.get(seed).get(0).getCount();
-        } catch (Exception e) {
-            return 1;
-        }
-    }
-
-    public static Set<ItemStack> getOtherResults(Item seed) {
-        List<ItemStack> results = recipes.get(seed);
-        List<ItemStack> newResults = new ArrayList<>();
-
-        // 如果结果不为空，则添加除了第一个以外的所有元素
-        if (results != null && !results.isEmpty()) {
-            newResults.addAll(results.subList(1, results.size()));
-        }
-
-        // 添加种子的默认实例
-        newResults.add(seed.getDefaultInstance());
-
-        // 返回不可变集合
-        return Collections.unmodifiableSet(new HashSet<>(newResults.stream().map(ItemStack::copy).collect(Collectors.toSet())));
-    }
-
-    public static int getSeedTier(Item seed) {
-        if (seed instanceof MysticalSeedsItem) {
-            return ((MysticalSeedsItem) seed).getCrop().getTier().getValue();
-        }
-        return 1;
-    }
-
-    public static int getAcceleratorBlockLevel(Block block) {
-        try {
-            return acceleratorBlockNames.indexOf(block.getRegistryName().getPath());
+            return recipes.get(seed).getResultItem().getCount();
         } catch (Exception e) {
             return 0;
         }
     }
 
+    public static List<ItemStack> getOtherResults(Item seed) {
+        List<ItemStack> newResults = recipes.get(seed).getOtherResults();
+
+        // 添加种子的默认实例
+        newResults.add(seed.getDefaultInstance());
+
+        // 返回不可变集合
+        return Collections.unmodifiableList(newResults);
+    }
+
+    public static int getSeedTier(Item seed) {
+        try {
+            return recipes.get(seed).getSeedLevel();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public static Block getCrux(Item seed) {
+        try {
+            return recipes.get(seed).getCrux();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static int getAcceleratorBlockLevel(Block block) {
+        try {
+            return acceleratorBlockNames.indexOf(block.getRegistryName().getPath()) + 1;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public void init() {
+        for (RecipeJson<Item, ItemStack> recipeJson : ModRecipe.seedManagerRecipeJson) {
+            recipes.put(recipeJson.inputs.get(0), new seedResultItem(1, recipeJson.outputs, null));
+        }
+
+        CropRegistry.getInstance().getCrops().forEach(iCrop -> {
+            if (iCrop.isEnabled()) {
+                recipes.put(iCrop.getSeeds(),
+                        new seedResultItem(iCrop.getTier().getValue(),
+                                Collections.singletonList(iCrop.getEssence().getDefaultInstance()),
+                                iCrop.getCrux()
+                        ));
+            }
+        });
+
+        recipes = Collections.unmodifiableMap(recipes);
+    }
+
+    public static class seedResultItem {
+
+        private final int seedLevel;
+        private final List<ItemStack> resultItems;
+        private final Block crux;
+
+        public seedResultItem(int seedLevel, List<ItemStack> ResultItems, Block crux) {
+            this.seedLevel = seedLevel;
+            resultItems = ResultItems;
+            this.crux = crux;
+        }
+
+        public ItemStack getResultItem() {
+            return resultItems.get(0);
+        }
+
+        public List<ItemStack> getOtherResults() {
+            if (resultItems.size() >= 2) {
+                return new ArrayList<>(resultItems.subList(1, resultItems.size()));
+            }
+            return new ArrayList<>();
+        }
+
+        public Block getCrux() {
+            return crux;
+        }
+
+        public int getSeedLevel() {
+            return seedLevel;
+        }
+    }
 }

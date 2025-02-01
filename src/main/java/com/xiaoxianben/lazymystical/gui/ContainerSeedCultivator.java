@@ -18,12 +18,18 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class ContainerSeedCultivator extends Container {
 
+    public final TESeedCultivator te;
     protected final IntArraySeedCultivator intArray;
-    protected int addSlotCount = 3;
-    public TESeedCultivator te;
+    final List<Rectangle> guiExtraArea = new ArrayList<>();
+    protected int inSlotCount = 1;
+
 
     public ContainerSeedCultivator(int id, PlayerInventory playerInventory, BlockPos pos, World world, IntArraySeedCultivator intArray) {
         super(ContainerTypeRegistry.ContainerTypeSeedCultivator.get(), id);
@@ -40,11 +46,16 @@ public class ContainerSeedCultivator extends Container {
             }
         }
 
-        this.te = (TESeedCultivator) world.getBlockEntity(pos);
+        this.te = Objects.requireNonNull((TESeedCultivator) world.getBlockEntity(pos));
         this.addSlot(new SlotInputItemHandler((InputItemHandler) te.getItemHandler(0), 0, 39, 33));
+        if (this.te.blockLevel > 5) {
+            this.addSlot(new SlotInputItemHandler((InputItemHandler) te.getItemHandler(0), 1, 39, 33 + 18));
+            inSlotCount++;
+        }
         for (int i = 0; i < te.getItemHandler(1).getSlots(); i++) {
             this.addSlot(new SlotInputItemHandler((InputItemHandler) te.getItemHandler(1), i, -17, 1 + 18 * i));
-            addSlotCount++;
+            guiExtraArea.add(new Rectangle(-18, 18 * i, 18, 18));
+            inSlotCount++;
         }
         this.addSlot(new SlotItemHandler(te.getItemHandler(2), 0, 99, 33));
         this.addSlot(new SlotItemHandler(te.getItemHandler(2), 1, 121, 33));
@@ -55,6 +66,9 @@ public class ContainerSeedCultivator extends Container {
         return new ContainerSeedCultivator(windowId, playerInventory, buffer.readBlockPos(), Minecraft.getInstance().level, new IntArraySeedCultivator(buffer.readVarIntArray()));
     }
 
+    protected List<Rectangle> getGuiExtraAreas() {
+        return guiExtraArea;
+    }
 
     @Override
     public boolean stillValid(@Nonnull PlayerEntity playerEntity) {
@@ -74,7 +88,7 @@ public class ContainerSeedCultivator extends Container {
 
             // 如果是在背包格子
             if (slotNumber < 36) {
-                if (!this.moveItemStackTo(itemStackOfSlot, 36, 36 + this.addSlotCount - 2, false)) {
+                if (!this.moveItemStackTo(itemStackOfSlot, 36, 36 + this.inSlotCount, false)) {
                     int startIndex = slotNumber < 9 ? 9 : 0;
                     int endIndex = slotNumber < 9 ? 36 : 9;
                     if (!this.moveItemStackTo(itemStackOfSlot, startIndex, endIndex, false)) {
