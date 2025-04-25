@@ -19,7 +19,7 @@ public class AgradditionsModManager {
         for (CropType.Type type : CropType.Type.values()) {
             if (type.isEnabled()) {
                 RootBlockRecipes.put(type.getSeed(), type.getRoot());
-                recipes.put(type.getSeed(), Collections.singletonList(type.getCrop().getDefaultInstance()));
+                recipes.put(type.getSeed(), Collections.singletonList(new ItemStack(type.getCrop())));
             }
         }
     }

@@ -39,7 +39,7 @@ public class ModJEIPlugin implements IModPlugin {
         for (Block[] seedCultivators : EnumBlockType.SeedCultivator.getAllBlocks()) {
             Arrays.stream(seedCultivators)
                     .filter(Objects::nonNull)
-                    .map(block -> Item.getItemFromBlock(block).getDefaultInstance())
+                    .map(block -> new ItemStack(Item.getItemFromBlock(block)))
                     .forEach(itemStack -> registry.addRecipeCatalyst(itemStack, SeedCultivatorCategory.ID));
         }
 
@@ -58,9 +58,9 @@ public class ModJEIPlugin implements IModPlugin {
             ArrayList<ItemStack> Outputs = new ArrayList<>();
             ArrayList<ItemStack> input = new ArrayList<>();
 
-            input.add(entry.getKey().getDefaultInstance());
+            input.add(new ItemStack(entry.getKey()));
             Outputs.add(entry.getValue().get(0));
-            Outputs.add(entry.getKey().getDefaultInstance());
+            Outputs.add(new ItemStack(entry.getKey()));
 
             if (SeedManager.getRootBlock(entry.getKey()) != null)
                 input.add(new ItemStack(SeedManager.getRootBlock(entry.getKey()), 1, SeedManager.getRootBlockMeta(entry.getKey())));

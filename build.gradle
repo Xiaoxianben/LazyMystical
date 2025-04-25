@@ -11,6 +11,7 @@ buildscript {
 
 apply plugin: "net.minecraftforge.gradle.forge"
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+apply from: "mirror.gradle"
 
 version = modVersion
 group = "com.xiaoxianben.lazymystical" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -20,6 +21,7 @@ sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse t
 compileJava {
     sourceCompatibility = targetCompatibility = "1.8"
 }
+
 
 minecraft {
     version = "1.12.2-14.23.5.2847"
@@ -100,8 +102,6 @@ processResources {
     }
 }
 
-//replaceString "http://resources.download.minecraft.net/", "https://download.mcbbs.net/assets/" // use MCBBS mirror due to there"s no way to hook http 302 response when downloading assets
-
 sourceSets {
     main {
         output.resourcesDir = file('build/combined')
@@ -113,7 +113,7 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-task buildJar {
+tasks.register('buildJar') {
     dependsOn 'clean'
 
     dependsOn 'build'

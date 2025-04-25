@@ -50,14 +50,14 @@ public class SeedManager {
     public void addRecipe(List<Recipe<Item, ItemStack>> recipes) {
         LinkedHashMap<Item, List<ItemStack>> seedManagerMap = new LinkedHashMap<>();
 
-        seedManagerMap.put(Items.WHEAT_SEEDS, Collections.singletonList(Items.WHEAT.getDefaultInstance())); // 小麦
-        seedManagerMap.put(Items.BEETROOT_SEEDS, Collections.singletonList(Items.BEETROOT.getDefaultInstance())); // 甜菜
+        seedManagerMap.put(Items.WHEAT_SEEDS, Collections.singletonList(new ItemStack(Items.WHEAT))); // 小麦
+        seedManagerMap.put(Items.BEETROOT_SEEDS, Collections.singletonList(new ItemStack(Items.BEETROOT))); // 甜菜
         seedManagerMap.put(Items.MELON_SEEDS, Collections.singletonList(new ItemStack(Items.MELON, 3))); // 西瓜
         seedManagerMap.put(Items.PUMPKIN_SEEDS, Collections.singletonList(new ItemStack(Blocks.PUMPKIN))); // 南瓜
-        seedManagerMap.put(Items.POTATO, Arrays.asList(Items.POTATO.getDefaultInstance(), Items.POISONOUS_POTATO.getDefaultInstance())); // 马铃薯
-        seedManagerMap.put(Items.CARROT, Collections.singletonList(Items.CARROT.getDefaultInstance())); // 胡萝卜
+        seedManagerMap.put(Items.POTATO, Arrays.asList(new ItemStack(Items.POTATO), new ItemStack(Items.POISONOUS_POTATO))); // 马铃薯
+        seedManagerMap.put(Items.CARROT, Collections.singletonList(new ItemStack(Items.CARROT))); // 胡萝卜
 //        seedManagerMap.put(Item.getItemFromBlock(Blocks.COCOA), Collections.singletonList(new ItemStack(Blocks.COCOA))); // 可可
-        seedManagerMap.put(Items.REEDS, Collections.singletonList(Items.REEDS.getDefaultInstance())); // 甘蔗
+        seedManagerMap.put(Items.REEDS, Collections.singletonList(new ItemStack(Items.REEDS))); // 甘蔗
         seedManagerMap.put(Item.getItemFromBlock(Blocks.CACTUS), Collections.singletonList(new ItemStack(Blocks.CACTUS))); // 仙人掌
         seedManagerMap.put(Items.NETHER_WART, Collections.singletonList(new ItemStack(Items.NETHER_WART))); // 地狱疣
 
@@ -89,7 +89,7 @@ public class SeedManager {
         }
 
         // 添加种子的默认实例
-        newResults.add(seed.getDefaultInstance());
+        newResults.add(new ItemStack(seed));
 
         // 返回不可变集合
         return Collections.unmodifiableSet(new HashSet<>(newResults.stream().map(ItemStack::copy).collect(Collectors.toSet())));

@@ -3,6 +3,7 @@ package com.xiaoxianben.lazymystical.init;
 import com.xiaoxianben.lazymystical.LazyMystical;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -22,7 +23,7 @@ public class ModRecipe {
         GameRegistry.addShapedRecipe(
                 outBlock.getRegistryName(),
                 new ResourceLocation(LazyMystical.MOD_ID, "accelerator"),
-                Item.getItemFromBlock(outBlock).getDefaultInstance(),
+                new ItemStack(Item.getItemFromBlock(outBlock)),
                 params);
     }
 
@@ -38,7 +39,7 @@ public class ModRecipe {
 
         GameRegistry.addShapedRecipe(outBlock.getRegistryName(),
                 new ResourceLocation(LazyMystical.MOD_ID, "seedCultivator"),
-                Item.getItemFromBlock(outBlock).getDefaultInstance(),
+                new ItemStack(Item.getItemFromBlock(outBlock)),
                 params);
     }
 

@@ -5,6 +5,7 @@ import com.xiaoxianben.lazymystical.init.EnumBlockType;
 import com.xiaoxianben.lazymystical.init.ModRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -39,7 +40,7 @@ public class MinecraftRegister implements IModRegister {
         GameRegistry.addShapelessRecipe(
                 new ResourceLocation(blocks[0].getRegistryName().toString() + "_2"),
                 new ResourceLocation(LazyMystical.MOD_ID, "accelerator1"),
-                Item.getItemFromBlock(blocks[0]).getDefaultInstance(),
+                new ItemStack(Item.getItemFromBlock(blocks[0])),
                 CraftingHelper.getIngredient(com.blakebr0.mysticalagriculture.blocks.ModBlocks.blockGrowthAccelerator)
         );
         for (Block block : blocks) {

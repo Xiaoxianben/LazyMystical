@@ -31,6 +31,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
 public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNBT {
 
@@ -230,7 +231,7 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
     private ItemStack[] getSeedAndEssence() {
         Item itemSeed = this.seedSlot.getStackInSlot(0).getItem();
         if (itemSeed == recipeInput) {
-            return new ItemStack[]{recipeInput.getDefaultInstance(), recipeOutput, recipeOutputOther};
+            return new ItemStack[]{new ItemStack(recipeInput), recipeOutput, recipeOutputOther};
         }
 
         ItemStack[] items = null;
@@ -238,9 +239,10 @@ public class TESeedCultivator extends TileEntity implements ITickable, IUpdateNB
         if (itemSeed != Items.AIR && SeedManager.getResultItemCount(itemSeed) != 0) {
             // 获取格子中的种子
             items = new ItemStack[3];
-            items[0] = itemSeed.getDefaultInstance();
+            items[0] = new ItemStack(itemSeed);
             items[1] = SeedManager.getResultItem(itemSeed);
-            items[2] = SeedManager.getOtherResults(itemSeed).toArray(new ItemStack[0])[new Random().nextInt(SeedManager.getOtherResults(itemSeed).size())];
+            Set<ItemStack> otherResults = SeedManager.getOtherResults(itemSeed);
+            items[2] = otherResults.toArray(new ItemStack[0])[new Random().nextInt(otherResults.size())];
         }
 
         return items;

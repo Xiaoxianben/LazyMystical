@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 public class LazyMystical {
 
     public static final String NAME = "Lazy Mystical";
-    public static final String VERSION = "1.4.0";
+    public static final String VERSION = "1.4.1";
     public static final String MOD_ID = "lazymystical";
     @Mod.Instance
     public static LazyMystical instance;
@@ -42,7 +42,7 @@ public class LazyMystical {
         @Nonnull
         @Override
         public ItemStack getTabIconItem() {
-            return Item.getItemFromBlock(EnumBlockType.SeedCultivator.getBlocks(EnumModRegister.MINECRAFT)[4]).getDefaultInstance();
+            return new ItemStack(Item.getItemFromBlock(EnumBlockType.SeedCultivator.getBlocks(EnumModRegister.MINECRAFT)[4]));
         }
     };
 //    private static SimpleNetworkWrapper network;
