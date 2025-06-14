@@ -5,7 +5,6 @@ import com.xiaoxianben.lazymystical.registry.ContainerTypeRegistry;
 import com.xiaoxianben.lazymystical.tileEntity.IntArraySeedCultivator;
 import com.xiaoxianben.lazymystical.tileEntity.ItemHandler.InputItemHandler;
 import com.xiaoxianben.lazymystical.tileEntity.TESeedCultivator;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -63,7 +62,7 @@ public class ContainerSeedCultivator extends Container {
     }
 
     public static ContainerSeedCultivator creat(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerSeedCultivator(windowId, playerInventory, buffer.readBlockPos(), Minecraft.getInstance().level, new IntArraySeedCultivator(buffer.readVarIntArray()));
+        return new ContainerSeedCultivator(windowId, playerInventory, buffer.readBlockPos(), playerInventory.player.level, new IntArraySeedCultivator(buffer.readVarIntArray()));
     }
 
     protected List<Rectangle> getGuiExtraAreas() {

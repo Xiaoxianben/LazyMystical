@@ -61,7 +61,9 @@ public class LazyMystical {
 
     @SubscribeEvent
     public void onClientSetupEvent(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> ScreenManager.register(ContainerTypeRegistry.ContainerTypeSeedCultivator.get(), ScreenSeedCultivator::new));
+        event.enqueueWork(() ->
+                ScreenManager.register(ContainerTypeRegistry.ContainerTypeSeedCultivator.get(), ScreenSeedCultivator::new)
+        );
     }
 
     @SubscribeEvent
