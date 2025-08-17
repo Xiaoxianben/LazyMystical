@@ -32,9 +32,7 @@ public class ConfigLoader {
 
 
     public int addInt(String category, String name, int defaultValue) {
-        int tempInt = config.getInt(name, category, defaultValue, 1, Integer.MAX_VALUE, I18n.translateToLocal("config." + name + ".comment"));
-        config.save();
-        return tempInt;
+        return config.getInt(name, category, defaultValue, 0, Integer.MAX_VALUE, I18n.translateToLocal("config." + name + ".comment"));
     }
 
     public float addFloat(String category, String name, float defaultValue) {
@@ -45,9 +43,7 @@ public class ConfigLoader {
         String common = I18n.translateToLocal("config." + name + ".comment");
         Property tempProperty = config.get(category, name, defaultValue, common, 0, Integer.MAX_VALUE, true, defaultValue.length);
 
-        int[] returnIntLIst = tempProperty.getIntList();
-        config.save();
-        return returnIntLIst;
+        return tempProperty.getIntList();
     }
 
     public double[] addDoubleLIst(String category, String name, double[] defaultValue) {
@@ -55,23 +51,24 @@ public class ConfigLoader {
 
         Property tempProperty = config.get(category, name, defaultValue, common, 0.0, Float.MAX_VALUE, true, defaultValue.length);
 
-        double[] returnIntLIst = tempProperty.getDoubleList();
-        config.save();
-        return returnIntLIst;
+        return tempProperty.getDoubleList();
     }
 
     public void load() {
         logger.info("Started loading config.");
 
+        ConfigValue.acceleratorSpeed = addInt(Configuration.CATEGORY_GENERAL, "acceleratorSpeed", 10);
+        ConfigValue.tileEntitySyncTick = addInt(Configuration.CATEGORY_GENERAL, "tileEntitySyncTick", 0);
+
         config.setCategoryComment(cultivatorCategory, I18n.translateToLocal("category." + cultivatorCategory + ".comment"));
 
-        ConfigValue.acceleratorSpeed = addInt(Configuration.CATEGORY_GENERAL, "acceleratorSpeed", 10);
-
-        ConfigValue.seedProbability = addInt(cultivatorCategory, "seedProbability", 100);
-        ConfigValue.seedSpeed = addInt(cultivatorCategory, "seedSpeed", 2000);
+        ConfigValue.seedProbability = addInt(cultivatorCategory, "seedProbability", 100000);
+        ConfigValue.othersProbability = addInt(cultivatorCategory, "othersProbability", 10000);
+        ConfigValue.seedSpeed = addInt(cultivatorCategory, "seedSpeed", 1200);
         ConfigValue.seedNumberMultiplier = addFloat(cultivatorCategory, "seedNumberMultiplier", 1.0f);
         ConfigValue.seedLevelMultiplier = addIntLIst(cultivatorCategory, "seedLevelMultiplier", new int[]{1, 2, 3, 4, 5, 6});
         ConfigValue.acceleratorLevelMultiplier = addDoubleLIst(cultivatorCategory, "acceleratorLevelMultiplier", new double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0});
+        ConfigValue.accelerantDritLevelMultiplier = addDoubleLIst(cultivatorCategory, "accelerantDritLevelMultiplier", new double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0});
 
         config.save(); //保存配置
         //至于为什么要保存配置呢？这是因为当配置缺失（最常见的原因就是配置文件没有创建，

@@ -10,20 +10,19 @@ import java.util.stream.Collectors;
 
 public class SeedCultivatorWrapper implements IRecipeWrapper {
 
-    public ItemStack[] input;
+    public final ItemStack[] inputs;
+    public final ItemStack[] output;
 
-    public ItemStack[] output;
 
-
-    public SeedCultivatorWrapper(ItemStack[] input, ItemStack[] output) {
-        this.input = input;
+    public SeedCultivatorWrapper(ItemStack[] inputs, ItemStack[] output) {
+        this.inputs = inputs;
         this.output = output;
     }
 
 
     @Override
     public void getIngredients(IIngredients ingredients) {
-        ingredients.setInputs(VanillaTypes.ITEM, Arrays.stream(input).collect(Collectors.toList()));
+        ingredients.setInputs(VanillaTypes.ITEM, Arrays.stream(inputs).collect(Collectors.toList()));
         ingredients.setOutputs(VanillaTypes.ITEM, Arrays.stream(output).collect(Collectors.toList()));
     }
 

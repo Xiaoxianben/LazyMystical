@@ -1,26 +1,78 @@
 itemGroup.lazymystical=Lazy Mystical
 
-tile.lazymystical-accelerator1.name=accelerator level 1
-tile.lazymystical-accelerator2.name=accelerator level 2
-tile.lazymystical-accelerator3.name=accelerator level 3
-tile.lazymystical-accelerator4.name=accelerator level 4
-tile.lazymystical-accelerator5.name=accelerator level 5
-tile.lazymystical-accelerator6.name=accelerator level 6
+#item
+item.lazymystical-accelerant_gel_1.name=accelerant gel level1
+item.lazymystical-accelerant_gel_2.name=accelerant gel level2
+item.lazymystical-accelerant_gel_3.name=accelerant gel level3
+item.lazymystical-accelerant_gel_4.name=accelerant gel level4
+item.lazymystical-accelerant_gel_5.name=accelerant gel level5
+item.lazymystical-accelerant_gel_6.name=accelerant gel level6
 
-tile.lazymystical-seed_cultivator_1.name=inferium seed cultivator
-tile.lazymystical-seed_cultivator_2.name=prudentium seed cultivator
-tile.lazymystical-seed_cultivator_3.name=tertium seed cultivator
-tile.lazymystical-seed_cultivator_4.name=imperium seed cultivator
-tile.lazymystical-seed_cultivator_5.name=supremium seed cultivator
-tile.lazymystical-seed_cultivator_6.name=insanium seed cultivator
+item.lazymystical-component_speed.name=component: speed
+item.lazymystical-component_no_light.name=component: no light
+item.lazymystical-component_speed.tooltip=speed up
+item.lazymystical-component_no_light.tooltip=make seed cultivators without light
 
+# block
+tile.lazymystical-accelerator1.name=accelerator level1
+tile.lazymystical-accelerator2.name=accelerator level2
+tile.lazymystical-accelerator3.name=accelerator level3
+tile.lazymystical-accelerator4.name=accelerator level4
+tile.lazymystical-accelerator5.name=accelerator level5
+tile.lazymystical-accelerator6.name=accelerator level6
+
+tile.lazymystical-seed_cultivator_1.name=seed cultivator level1
+tile.lazymystical-seed_cultivator_2.name=seed cultivator level2
+tile.lazymystical-seed_cultivator_3.name=seed cultivator level3
+tile.lazymystical-seed_cultivator_4.name=seed cultivator level4
+tile.lazymystical-seed_cultivator_5.name=seed cultivator level5
+tile.lazymystical-seed_cultivator_6.name=seed cultivator level6
+
+tile.lazymystical-accelerant_fluid_1.name=accelerant fluid level1
+tile.lazymystical-accelerant_fluid_2.name=accelerant fluid level2
+tile.lazymystical-accelerant_fluid_3.name=accelerant fluid level3
+tile.lazymystical-accelerant_fluid_4.name=accelerant fluid level4
+tile.lazymystical-accelerant_fluid_5.name=accelerant fluid level5
+tile.lazymystical-accelerant_fluid_6.name=accelerant fluid level6
+
+tile.lazymystical-accelerant_dirt_1.name=accelerant drit level1
+tile.lazymystical-accelerant_dirt_2.name=accelerant drit level2
+tile.lazymystical-accelerant_dirt_3.name=accelerant drit level3
+tile.lazymystical-accelerant_dirt_4.name=accelerant drit level4
+tile.lazymystical-accelerant_dirt_5.name=accelerant drit level5
+tile.lazymystical-accelerant_dirt_6.name=accelerant drit level6
+
+tile.lazymystical-accelerant_farmland_1.name=accelerant farmland level1
+tile.lazymystical-accelerant_farmland_2.name=accelerant farmland level2
+tile.lazymystical-accelerant_farmland_3.name=accelerant farmland level3
+tile.lazymystical-accelerant_farmland_4.name=accelerant farmland level4
+tile.lazymystical-accelerant_farmland_5.name=accelerant farmland level5
+tile.lazymystical-accelerant_farmland_6.name=accelerant farmland level6
+
+tile.lazymystical-hand_crank_generator.name=hand crank generator
+
+# fluid
+tile.lazymystical-accelerant_fluid.name=accelerant fluid
+fluid.accelerant_fluid=accelerant fluid
+
+#config
 config.acceleratorSpeed.comment=amount of seconds between each update scale of the growth accelerator.
+config.tileEntitySyncTick.comment=The number of ticks that the block entity delays synchronization when the GUI is not opened.
 
-category.cultivator.comment=config of cultivator: The configuration of the incubator. \nSeed final speed = time it takes for a seed to grow * 20 * growth time multiplier for seeds of that level * number of seeds valid.
-config.seedProbability.comment=config of cultivator: After a production, the probability of producing seeds should be greater than or equal to 1. Seed Probability = 1 / Probability of Seed Generation. When it is 0, no seeds will be generated.
+category.cultivator.comment=config of cultivator
+
+config.seedProbability.comment=config of cultivator: After once production, the probability of producing seeds should be greater than or equal to 1. Actual probability = 1 / this value. 0, no seeds will be generated.
+config.othersProbability.comment=config of cultivator: After once production, the probability of producing others item should be greater than or equal to 1. Actual probability = 1 / this value. 0, no seeds will be generated.
 config.seedSpeed.comment=config of cultivator: The time it takes for one seed to grow, in seconds.
 config.seedNumberMultiplier.comment=config of cultivator: Multiplier of the number of seeds, effective seed multiplier = 1 + (number of effective seeds - 1) * increase in the number of seeds.
 config.seedLevelMultiplier.comment=config of cultivator: The growth time of different grades of seeds is increased, and the growth time of grade 1 seeds is used as a reference.
-config.acceleratorLevelMultiplier.comment=config of cultivator: The increase rate of different levels of growth accelerators, based on the level 1 growth accelerator. \nReduced growth time per tick = incubator grade * total growth accelerator magnification. \nTotal Growth Accelerator Magnification = Sum of the growth accelerator magnifications of different levels. \nGrowth Accelerator Multiplier = Number of Growth Accelerators of the same level * Increase of the Growth Accelerator of that level.
+config.accelerantDritLevelMultiplier.comment=config of cultivator: The growth time of different grades of seeds is increased, and the growth time of grade 1 seeds is used as a reference, The higher the value, the shorter the seed growth time.
+config.acceleratorLevelMultiplier.comment=config of cultivator: The increase rate of different levels of growth accelerators, based on the level 1 growth accelerator, The higher the value, the shorter the seed growth time.
 
+#jei
 category.seed_cultivator.title=Seed Cultivator
+category.accelerant_fluid.title=Accelerant Fluid
+
+# gui
+gui.count.string=count: %s/%s
+gui.level.string=level: %s

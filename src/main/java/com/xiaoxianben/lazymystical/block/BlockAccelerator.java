@@ -24,11 +24,47 @@ import java.util.Random;
 
 public class BlockAccelerator extends BlockBasic {
 
+    public static void growCropsNearby(World world, BlockPos pos, IBlockState state, int level, int upLevel) {
+        Iterable<BlockPos> blocks = BlockPos.getAllInBox(pos.up(2), pos.up(upLevel));
 
-    public BlockAccelerator(int level) {
+        if (!blocks.iterator().hasNext()) {
+            world.scheduleBlockUpdate(pos, state.getBlock(), 40, 1);
+        } else {
+            for (BlockPos aoePos : blocks) {
+                IBlockState cropState = world.getBlockState(aoePos);
+                Block cropBlock = cropState.getBlock();
+
+                if (cropBlock instanceof IGrowable || cropBlock instanceof IPlantable) {
+                    for (int i = 0; i < level; i++) {
+                        cropBlock.updateTick(world, aoePos, cropState, world.rand);
+                    }
+                }
+            }
+            worldUpdate(world, pos, state);
+        }
+    }
+
+    public static void worldUpdate(World world, BlockPos pos, IBlockState state) {
+        // 随机的结果在 [0.64~1.21)
+        int time = (int) (ConfigValue.acceleratorSpeed * 20 * getRandomFloat(world) * getRandomFloat(world));
+        world.scheduleBlockUpdate(pos, state.getBlock(), time, 1);
+    }
+
+    /**
+     * 随机获取0.8到1.1之间的数
+     */
+    public static float getRandomFloat(World world) {
+        return 0.8f + world.rand.nextFloat() * 0.3f;
+    }
+
+
+    public final int level;
+
+
+    public BlockAccelerator(Integer level) {
         super("accelerator" + level, Material.ROCK, SoundType.STONE, LazyMystical.tab);
         this.setTickRandomly(false);
-        this.setLevel(level);
+        this.level = level;
     }
 
 
@@ -41,8 +77,8 @@ public class BlockAccelerator extends BlockBasic {
     @ParametersAreNonnullByDefault
     @Override
     public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
-        world.scheduleBlockUpdate(pos, state.getBlock(), 1, 1);
         super.onBlockAdded(world, pos, state);
+        worldUpdate(world, pos, state);
     }
 
     /**
@@ -52,41 +88,12 @@ public class BlockAccelerator extends BlockBasic {
     @Override
     public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
         if (!world.isRemote) {
-            this.growCropsNearby(world, pos, state);
-        }
-    }
-
-    private void growCropsNearby(World world, BlockPos pos, IBlockState state) {
-        Iterable<BlockPos> blocks = BlockPos.getAllInBox(pos.up(2), pos.up(12 * this.getLevel() + 2));
-
-        if (!blocks.iterator().hasNext() || !isEnabled()) {
-            world.scheduleBlockUpdate(pos, state.getBlock(), 1, 1);
-        } else {
-            for (BlockPos aoePos : blocks) {
-                IBlockState cropState = world.getBlockState(aoePos);
-                Block cropBlock = cropState.getBlock();
-
-                if (cropBlock instanceof IGrowable || cropBlock instanceof IPlantable) {
-                    for (int i = 0; i < new Random().nextInt(this.getLevel()) + 1; i++) {
-                        cropBlock.updateTick(world, aoePos, cropState, world.rand);
-                    }
-                }
+            if (!isEnabled()) {
+                world.scheduleBlockUpdate(pos, state.getBlock(), 40, 1);
+                return;
             }
-            worldUpdate(world, pos, state);
+            growCropsNearby(world, pos, state, level, 12 * level + 2);
         }
-    }
-
-    private void worldUpdate(World world, BlockPos pos, IBlockState state) {
-        // 随机的结果在 [0.64~1.21)
-        int time = (int) (ConfigValue.acceleratorSpeed * 20 * getRandomFloat() * getRandomFloat());
-        world.scheduleBlockUpdate(pos, state.getBlock(), time, 1);
-    }
-
-    /**
-     * 随机获取0.8到1.1之间的数
-     */
-    private float getRandomFloat() {
-        return 0.8f + new Random().nextFloat() * 0.3f;
     }
 
     public boolean isEnabled() {

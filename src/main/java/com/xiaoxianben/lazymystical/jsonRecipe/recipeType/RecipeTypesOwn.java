@@ -53,9 +53,14 @@ public class RecipeTypesOwn {
         @Override
         public ItemStack getRecipe(JsonObject json) {
             Item item = Item.getByNameOrId(json.get("name").getAsString());
-            int count = json.get("count").getAsInt();
+            int count = json.has("count") ? json.get("count").getAsInt() : 1;
             int meta = json.has("meta") ? json.get("meta").getAsInt() : 0;
             return new ItemStack(item, count, meta);
+        }
+
+        @Override
+        public boolean equals(ItemStack o1, ItemStack o2) {
+            return ItemStack.areItemsEqual(o1, o2) && ItemStack.areItemStackTagsEqual(o1, o2);
         }
     };
     public static final IRecipeType<Item> recipe_item = new IRecipeType<Item>() {
@@ -80,6 +85,9 @@ public class RecipeTypesOwn {
             return Item.getByNameOrId(json.get("name").getAsString());
         }
     };
+    public static final RecipeSeedCultivator recipe_seedCultivator = new RecipeSeedCultivator();
+    public static final RecipeInt recipe_value = new RecipeInt("value");
+
     public static final IRecipeType<FluidStack> recipe_fluidStack = new IRecipeType<FluidStack>() {
         @Override
         public Class<FluidStack> getClassType() {
@@ -125,32 +133,7 @@ public class RecipeTypesOwn {
             return FluidRegistry.getFluid(json.get("name").getAsString());
         }
     };
-    //    public static final IRecipeType<ItemOrFluid> recipe_itemOrFluid = new IRecipeType<ItemOrFluid>() {
-//        @Override
-//        public Class<ItemOrFluid> getClassType() {
-//            return ItemOrFluid.class;
-//        }
-//
-//        @Override
-//        public JsonObject getRecipeJson(ItemOrFluid itemOrFluid) {
-//            JsonObject json;
-//
-//            if (itemOrFluid.get() instanceof ItemStack) {
-//                json = recipe_itemStack.getRecipeJson((ItemStack) itemOrFluid.get());
-//            } else {
-//                json = recipe_fluidStack.getRecipeJson((FluidStack) itemOrFluid.get());
-//            }
-//
-//            return json;
-//        }
-//
-//        @Override
-//        public ItemOrFluid getRecipe(JsonObject json) {
-//            return new ItemOrFluid(json.get("name").getAsString(), json.get("count").getAsInt());
-//        }
-//    };
-//    public static final IRecipeType<Integer> recipe_energy = new RecipeInt("energy");
-//    public static final IRecipeType<Integer> recipe_level = new RecipeInt("level");
+
     public static final IRecipeType<Float> recipe_float = new RecipeFloat("multiplier");
 
 }

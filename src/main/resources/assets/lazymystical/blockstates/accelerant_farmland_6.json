@@ -1,0 +1,29 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "particle": "lazymystical:blocks/accelerant_drit/6",
+      "dirt": "lazymystical:blocks/accelerant_drit/6",
+      "top": "lazymystical:blocks/farmland/6"
+    },
+    "model": "farmland"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "moisture": {
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {},
+      "4": {},
+      "5": {},
+      "6": {},
+      "7": {}
+    },
+    "inventory": {
+      "transform": "forge:default-block"
+    }
+  }
+}

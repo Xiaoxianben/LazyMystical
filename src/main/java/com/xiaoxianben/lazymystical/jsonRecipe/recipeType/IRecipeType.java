@@ -11,4 +11,8 @@ public interface IRecipeType<T> {
 
     T getRecipe(JsonObject json);
 
+    default boolean equals(T o1, T o2) {
+        return o1.equals(o2);
+    }
+
 }

@@ -1,7 +1,7 @@
 buildscript {
     repositories {
-        jcenter()
         mavenCentral()
+        maven { url "https://maven.aliyun.com/nexus/content/groups/public" } // 阿里云镜像
         maven { url = "https://files.minecraftforge.net/maven" }
     }
     dependencies {
@@ -9,19 +9,19 @@ buildscript {
     }
 }
 
-apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply from: "mirror.gradle"
+apply from: "runmanager.gradle"
 
 version = modVersion
 group = "com.xiaoxianben.lazymystical" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "lazymystical-1.12.2"
 
-sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
+    sourceCompatibility = targetCompatibility = '1.8'
 }
-
 
 minecraft {
     version = "1.12.2-14.23.5.2847"
@@ -62,24 +62,12 @@ dependencies {
     //compile "com.mod-buildcraft:buildcraft:6.0.8:dev"  // adds buildcraft to the dev env
     //compile "com.googlecode.efficient-java-matrix-library:ejml:0.24" // adds ejml to the dev env
 
-    implementation "maven.modrinth:Rw1NrDzF:qGk4NMk6" // cucumber
+    implementation ("maven.modrinth:Rw1NrDzF:qGk4NMk6") // cucumber
     implementation "maven.modrinth:C95ReXie:tkG0KX4G" // mysticalagriculture
     implementation "maven.modrinth:pl0jGXIx:fNIXv2Jz" // mysticalagradditions
 
     compile "mezz.jei:jei_${project.minecraft.version}:${jei_version}:api"
-    runtime "mezz.jei:jei_${project.minecraft.version}:${jei_version}"
-
-    // the "provided" configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    //provided "com.mod-buildcraft:buildcraft:6.0.8:dev"
-
-    // the deobf configurations:  "deobfCompile" and "deobfProvided" are the same as the normal compile and provided,
-    // except that these dependencies get remapped to your current MCP mappings
-    //deobfCompile "com.mod-buildcraft:buildcraft:6.0.8:dev"
-    //deobfProvided "com.mod-buildcraft:buildcraft:6.0.8:dev"
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    implementation "mezz.jei:jei_${project.minecraft.version}:${jei_version}"
 
 }
 
@@ -90,34 +78,20 @@ processResources {
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
-        include "mcmod.info"
+        include 'mcmod.info'
 
         // replace version and mcversion
-        expand "version": project.version, "mcversion": project.minecraft.version
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
 
     // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
-        exclude "mcmod.info"
+        exclude 'mcmod.info'
     }
 }
 
-sourceSets {
-    main {
-        output.resourcesDir = file('build/combined')
-        java.outputDir = file('build/combined')
-    }
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
 }
 
-jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.register('buildJar') {
-    dependsOn 'clean'
-
-    dependsOn 'build'
-    doLast {
-        println "Jar is building now."
-    }
-}
+sourceSets.main.resources { srcDir 'src/main/resources' }

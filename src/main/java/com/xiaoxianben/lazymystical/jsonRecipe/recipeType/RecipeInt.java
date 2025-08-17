@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 
 public class RecipeInt implements IRecipeType<Integer> {
 
-    public String name;
+    public final String name;
 
     public RecipeInt(String name) {
         this.name = name;

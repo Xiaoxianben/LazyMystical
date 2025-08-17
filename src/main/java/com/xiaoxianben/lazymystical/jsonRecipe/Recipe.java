@@ -1,75 +1,89 @@
 package com.xiaoxianben.lazymystical.jsonRecipe;
 
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xiaoxianben.lazymystical.jsonRecipe.recipeType.IRecipeType;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Recipe<i, o> {
 
-    private final IRecipeType<i> input;
-    private final IRecipeType<o> output;
+    private final IRecipeType<i> inputType;
+    private final IRecipeType<o> outputType;
 
-    public int id;
-    public List<i> inputs = new ArrayList<>();
-    public List<o> outputs = new ArrayList<>();
+    public final List<String> ids = new ArrayList<>();
+    public final List<i> inputs = new ArrayList<>();
+    public final List<o> outputs = new ArrayList<>();
 
     public Recipe(IRecipeType<i> input, IRecipeType<o> output) {
-        this.input = input;
-        this.output = output;
+        this.inputType = input;
+        this.outputType = output;
     }
 
-    public Recipe<i, o> create(int id, List<i> inputs, List<o> outputs) {
-        Recipe<i, o> recipe = new Recipe<>(input, output);
-        recipe.id = id;
-        recipe.inputs = inputs;
-        recipe.outputs = outputs;
-        return recipe;
+    /** 你不应该对其返回内容进行修改 */
+    @Nullable
+    public o getOutput(i input) {
+        for (int i = 0; i < inputs.size(); i++) {
+            if (inputType.equals(inputs.get(i), input)) {
+                return outputs.get(i);
+            }
+        }
+        return null;
+    }
+    /** 你不应该对其返回内容进行修改 */
+    public o getOutput(int index) {
+        return outputs.get(index);
+    }
+    /** 你不应该对其返回内容进行修改 */
+    public i getInput(int index) {
+        return inputs.get(index);
+    }
+    public int size() {
+        return inputs.size();
+    }
+
+    public Recipe<i, o> addRecipe(String id, i input, o output) {
+        this.inputs.add(input);
+        this.outputs.add(output);
+        this.ids.add(id);
+        return this;
     }
 
     public JsonObject toJsonObject() {
         JsonObject json = new JsonObject();
-        json.addProperty("id", this.id);
 
-        JsonArray inputJsonArray = new JsonArray();
-        for (i i : inputs) {
-            inputJsonArray.add(input.getRecipeJson(i));
-        }
-        json.add("inputs", inputJsonArray);
+        for (int i = 0; i < ids.size(); i++) {
+            JsonObject jsonObject1 = new JsonObject();
+            jsonObject1.add("input", inputType.getRecipeJson(inputs.get(i)));
+            jsonObject1.add("output", outputType.getRecipeJson(outputs.get(i)));
 
-        JsonArray outputJsonArray = new JsonArray();
-        for (o o : outputs) {
-            outputJsonArray.add(output.getRecipeJson(o));
+            json.add(ids.get(i), jsonObject1);
         }
-        json.add("outputs", outputJsonArray);
 
         return json;
     }
 
     public Recipe<i, o> JsonObjectToRecipe(JsonObject json) {
-        Recipe<i, o> recipe = new Recipe<>(input, output);
-        recipe.id = json.get("id").getAsInt();
+        for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+            final JsonObject value = entry.getValue().getAsJsonObject();
 
-        JsonArray inputJsonArray = json.getAsJsonArray("inputs");
-        for (int i = 0; i < inputJsonArray.size(); i++) {
-            recipe.inputs.add(input.getRecipe(inputJsonArray.get(i).getAsJsonObject()));
+            this.ids.add(entry.getKey());
+            this.inputs.add(inputType.getRecipe(value.getAsJsonObject("input")));
+            this.outputs.add(outputType.getRecipe(value.getAsJsonObject("output")));
         }
 
-        JsonArray outputJsonArray = json.getAsJsonArray("outputs");
-        for (int i = 0; i < outputJsonArray.size(); i++) {
-            recipe.outputs.add(output.getRecipe(outputJsonArray.get(i).getAsJsonObject()));
-        }
-        return recipe;
+        return this;
     }
 
     public IRecipeType<i> getInputRecipeType() {
-        return input;
+        return inputType;
     }
 
     public IRecipeType<o> getOutputRecipeType() {
-        return output;
+        return outputType;
     }
 }

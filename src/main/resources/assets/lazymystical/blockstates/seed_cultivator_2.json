@@ -1,32 +1,32 @@
 {
-    "forge_marker": 1,
-    "defaults": {
-        "textures": {
-            "side": "lazymystical:blocks/machine/2_side",
-            "front": "lazymystical:blocks/machine/2"
-        },
-        "model": "lazymystical:machine"
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "side": "lazymystical:blocks/machine/side/2",
+      "front": "lazymystical:blocks/machine/seed_cultivator/2"
     },
-    "variants": {
-        "normal": [
-            {}
-        ],
-        "facing": {
-            "north": {
-                "y": 0
-            },
-            "south": {
-                "y": 180
-            },
-            "west": {
-                "y": 270
-            },
-            "east": {
-                "y": 90
-            }
-        },
-        "inventory": {
-            "transform": "forge:default-block"
-        }
+    "model": "lazymystical:machine"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "facing": {
+      "north": {
+        "y": 0
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "east": {
+        "y": 90
+      }
+    },
+    "inventory": {
+      "transform": "forge:default-block"
     }
+  }
 }

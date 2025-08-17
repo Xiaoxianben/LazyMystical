@@ -74,11 +74,6 @@ for (clazz in classToInit) {
 
 replaceString "http://resources.download.minecraft.net/", "https://resources.download.minecraft.net/"
 
-tasks.whenTaskAdded {
-    if (it.name == "getVersionJson") it.dependsOn mirrorManifest
-    if (it.name == "getVersionJson" || it.name == "extractUserdev") it.finalizedBy mirrorVersionJson
-}
-
 // this task is to replace urls in version manifest json (https://launchermeta.mojang.com/mc/game/version_manifest.json)
 tasks.register('mirrorManifest') {
     doLast {
@@ -106,6 +101,11 @@ tasks.register('mirrorVersionJson') {
             }
         }
     }
+}
+
+tasks.whenTaskAdded {
+    if (it.name == "getVersionJson") it.dependsOn mirrorManifest
+    if (it.name == "getVersionJson" || it.name == "extractUserdev") it.finalizedBy mirrorVersionJson
 }
 
 //afterEvaluate {

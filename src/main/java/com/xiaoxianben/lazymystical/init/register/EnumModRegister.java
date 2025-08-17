@@ -26,7 +26,7 @@ public enum EnumModRegister {
                 try {
                     this.register = ((Class<?>) this.register).newInstance();
                 } catch (Exception e) {
-                    ConfigLoader.logger.error("the {} extension is not loaded.", modIds);
+                    ConfigLoader.logger.info("the {} extension isn't loaded.", modIds);
                 }
             }
         }
@@ -57,7 +57,7 @@ public enum EnumModRegister {
         IModRegister register1 = getRegister();
         if (register1 != null) {
             register1.posInit();
-            ConfigLoader.logger.info("the {} extension is loaded.", modIds);
+            ConfigLoader.logger.info("the {} extension has been loaded.", modIds);
         }
         register = null;
     }
