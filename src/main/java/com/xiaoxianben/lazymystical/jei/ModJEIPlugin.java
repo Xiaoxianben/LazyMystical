@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @JEIPlugin
 public class ModJEIPlugin implements IModPlugin {
@@ -39,6 +40,14 @@ public class ModJEIPlugin implements IModPlugin {
     @ParametersAreNonnullByDefault
     @Override
     public void register(IModRegistry registry) {
+        for (Block[] blocks : EnumBlockType.AccelerantDirt.getAllBlocks()) {
+            SeedCultivatorCategory.allAccelerantDirt.addAll(Arrays.stream(blocks).map(ItemStack::new).collect(Collectors.toList()));
+        }
+
+        for (Block[] blocks : EnumBlockType.Accelerator.getAllBlocks()) {
+            SeedCultivatorCategory.allAccelerator.addAll(Arrays.stream(blocks).map(ItemStack::new).collect(Collectors.toList()));
+        }
+
         for (Block[] seedCultivators : EnumBlockType.SeedCultivator.getAllBlocks()) {
             Arrays.stream(seedCultivators)
                     .filter(Objects::nonNull)
